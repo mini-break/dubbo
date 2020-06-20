@@ -37,6 +37,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 统一资源定位
  * URL - Uniform Resource Locator (Immutable, ThreadSafe)
  * <p>
  * url example:

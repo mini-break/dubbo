@@ -51,7 +51,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * AbstractRegistry. (SPI, Prototype, ThreadSafe)
- *
  */
 public abstract class AbstractRegistry implements Registry {
 
@@ -61,17 +60,30 @@ public abstract class AbstractRegistry implements Registry {
     private static final String URL_SPLIT = "\\s+";
     // Log output
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    // 本地磁盘缓存，有一个特殊的key值为registies，记录的是注册中心列表，其他记录的都是服务提供者列表
     // Local disk cache, where the special key value.registies records the list of registry centers, and the others are the list of notified service providers
     private final Properties properties = new Properties();
+    // 缓存写入执行器
     // File cache timing writing
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
+    // 是否同步保存文件标志
     // Is it synchronized to save the file
     private final boolean syncSaveFile;
+    // 数据版本号
     private final AtomicLong lastCacheChanged = new AtomicLong();
+    // 已注册 URL 集合 注册的 URL 不仅仅可以是服务提供者的，也可以是服务消费者的
     private final Set<URL> registered = new ConcurrentHashSet<URL>();
+    // 订阅URL的监听器集合
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
+    /**
+     * 某个消费者被通知的某一类型的 URL 集合
+     * 第一个key是消费者的URL，对应的就是哪个消费者。
+     * value是一个map集合，该map集合的key是分类的意思，例如providers、routes等，value就是被通知的URL集合
+     */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
+    // 注册中心 URL
     private URL registryUrl;
+    // 本地磁盘缓存文件，缓存注册中心的数据
     // Local disk cache file
     private File file;
 
@@ -79,9 +91,11 @@ public abstract class AbstractRegistry implements Registry {
         setUrl(url);
         // Start file save timer
         syncSaveFile = url.getParameter(Constants.REGISTRY_FILESAVE_SYNC_KEY, false);
+        // C:\Users\Admin/.dubbo/dubbo-registry-echo-provider-139.222.183.114:2181.cache
         String filename = url.getParameter(Constants.FILE_KEY, System.getProperty("user.home") + "/.dubbo/dubbo-registry-" + url.getParameter(Constants.APPLICATION_KEY) + "-" + url.getAddress() + ".cache");
         File file = null;
         if (ConfigUtils.isNotEmpty(filename)) {
+            // 创建文件
             file = new File(filename);
             if (!file.exists() && file.getParentFile() != null && !file.getParentFile().exists()) {
                 if (!file.getParentFile().mkdirs()) {
@@ -90,7 +104,9 @@ public abstract class AbstractRegistry implements Registry {
             }
         }
         this.file = file;
+        // 把文件里面的数据写入properties
         loadProperties();
+        // 通知监听器，URL 变化结果
         notify(url.getBackupUrls());
     }
 

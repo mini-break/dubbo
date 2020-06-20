@@ -21,6 +21,8 @@ import com.alibaba.dubbo.common.URL;
 import java.util.List;
 
 /**
+ * 该接口是注册中心模块的服务接口，提供了注册、取消注册、订阅、取消订阅以及查询符合条件的已注册数据
+ *
  * RegistryService. (SPI, Prototype, ThreadSafe)
  *
  * @see com.alibaba.dubbo.registry.Registry
@@ -66,7 +68,7 @@ public interface RegistryService {
      * 7. The subscription process must be blocked, when the first notice is finished and then returned.<br>
      *
      * @param url      Subscription condition, not allowed to be empty, e.g. consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
-     * @param listener A listener of the change event, not allowed to be empty
+     * @param listener A listener of the change event, not allowed to be empty        listener是用来监听处理注册数据变更的事件
      */
     void subscribe(URL url, NotifyListener listener);
 

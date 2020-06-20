@@ -19,6 +19,8 @@ package com.alibaba.dubbo.registry;
 import com.alibaba.dubbo.common.Node;
 
 /**
+ * 注册中心接口，该接口很好理解，就是把节点以及注册中心服务的方法整合在了这个接口里面
+ *
  * Registry. (SPI, Prototype, ThreadSafe)
  *
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(com.alibaba.dubbo.common.URL)
