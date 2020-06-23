@@ -65,14 +65,17 @@ public class ExtensionLoader<T> {
     private static final String DUBBO_DIRECTORY = "META-INF/dubbo/";
 
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
-
     /**
      * 逗号分割
      */
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
-
+    /**
+     * <类,扩展点加载器>
+     */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
-
+    /**
+     * <类,实例>
+     */
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
     // ==============================
@@ -80,18 +83,33 @@ public class ExtensionLoader<T> {
     private final Class<?> type;
 
     private final ExtensionFactory objectFactory;
-
+    /**
+     * <类,扩展点名称>
+     */
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
-
+    /**
+     * 持有扩展点实现类
+     */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
+    /**
+     * 持有扩展点自适应类实例
+     */
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
+    /**
+     * 缓存自适应扩展实现类
+     */
     private volatile Class<?> cachedAdaptiveClass = null;
+    /**
+     * 缓存扩展点默认实现类名称
+     */
     private String cachedDefaultName;
     private volatile Throwable createAdaptiveInstanceError;
-
+    /**
+     * 缓存包装类
+     */
     private Set<Class<?>> cachedWrapperClasses;
 
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
@@ -723,7 +741,7 @@ public class ExtensionLoader<T> {
                     throw new IllegalStateException("No such extension name for the class " + clazz.getName() + " in the config " + resourceURL);
                 }
             }
-            // 切分 name
+            // 逗号切分 name
             String[] names = NAME_SEPARATOR.split(name);
             if (names != null && names.length > 0) {
                 Activate activate = clazz.getAnnotation(Activate.class);
