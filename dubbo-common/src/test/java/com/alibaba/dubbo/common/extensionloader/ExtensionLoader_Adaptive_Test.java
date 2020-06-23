@@ -44,6 +44,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
+/**
+ * 扩展点自适应测试
+ */
 public class ExtensionLoader_Adaptive_Test {
 
     @Test
