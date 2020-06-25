@@ -56,6 +56,7 @@ import java.util.Properties;
 import static com.alibaba.dubbo.common.utils.NetUtils.isInvalidLocalHost;
 
 /**
+ * 服务消费者引用服务配置
  * ReferenceConfig
  *
  * @export
@@ -81,6 +82,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     private List<MethodConfig> methods;
     // default config
     private ConsumerConfig consumer;
+    /**
+     * 只调用指定协议的服务提供方，其它协议忽略
+     */
     private String protocol;
     // interface proxy reference
     private transient volatile T ref;

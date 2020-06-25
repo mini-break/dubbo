@@ -63,6 +63,7 @@ import static com.alibaba.dubbo.common.utils.NetUtils.isInvalidLocalHost;
 import static com.alibaba.dubbo.common.utils.NetUtils.isInvalidPort;
 
 /**
+ * 服务提供者暴露服务配置
  * ServiceConfig
  *
  * @export
@@ -81,14 +82,29 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private final List<URL> urls = new ArrayList<URL>();
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();
     // interface type
+    /**
+     * 服务接口名
+     */
     private String interfaceName;
+    /**
+     *
+     */
     private Class<?> interfaceClass;
     // reference to interface impl
+    /**
+     * 服务对象实现引用
+     */
     private T ref;
     // service name
+    /**
+     * 服务路径 (注意：1.0不支持自定义路径，总是使用接口名，如果有1.0调2.0，配置服务路径可能不兼容)
+     */
     private String path;
     // method configuration
     private List<MethodConfig> methods;
+    /**
+     * 指定provider，值为<dubbo:provider>的id属性
+     */
     private ProviderConfig provider;
     private transient volatile boolean exported;
 

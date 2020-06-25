@@ -17,6 +17,7 @@
 package com.alibaba.dubbo.config;
 
 /**
+ * 服务消费者配置,同时该标签为 <dubbo:reference> 标签的缺省值设置
  * ConsumerConfig
  *
  * @export

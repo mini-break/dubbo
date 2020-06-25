@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 方法级配置,同时该标签为 <dubbo:service> 或 <dubbo:reference> 的子标签，用于控制到方法级
  * MethodConfig
  *
  * @export

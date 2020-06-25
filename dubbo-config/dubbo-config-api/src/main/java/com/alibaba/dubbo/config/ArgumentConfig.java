@@ -22,6 +22,7 @@ import com.alibaba.dubbo.config.support.Parameter;
 import java.io.Serializable;
 
 /**
+ * 方法参数配置。该标签为 <dubbo:method> 的子标签，用于方法参数的特征描述
  * @export
  */
 public class ArgumentConfig implements Serializable {
@@ -29,12 +30,22 @@ public class ArgumentConfig implements Serializable {
     private static final long serialVersionUID = -2165482463925213595L;
 
     //argument: index -1 represents not set
+    /**
+     * 参数索引 必填
+     */
     private Integer index = -1;
 
     //argument type
+    /**
+     * 通过参数类型查找参数的index
+     * 与index二选一
+     */
     private String type;
 
     //callback interface
+    /**
+     * 参数是否为callback接口，如果为callback，服务提供方将生成反向代理，可以从服务提供方反向调用消费方，通常用于事件推送
+     */
     private Boolean callback;
 
     public ArgumentConfig() {

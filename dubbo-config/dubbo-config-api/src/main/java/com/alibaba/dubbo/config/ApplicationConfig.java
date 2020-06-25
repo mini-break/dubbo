@@ -27,6 +27,7 @@ import java.util.Map;
 
 
 /**
+ * 应用信息配置
  * ApplicationConfig
  *
  * @export
@@ -36,51 +37,108 @@ public class ApplicationConfig extends AbstractConfig {
     private static final long serialVersionUID = 5508512956753757169L;
 
     // application name
+    /**
+     * 必填
+     * 当前应用名称，用于注册中心计算应用间依赖关系
+     */
     private String name;
 
     // module version
+    /**
+     * 当前应用的版本
+     */
     private String version;
 
     // application owner
+    /**
+     * 应用负责人，用于服务治理，请填写负责人公司邮箱前缀
+     */
     private String owner;
 
     // application's organization (BU)
+    /**
+     * 组织名称(BU或部门)，用于注册中心区分服务来源，此配置项建议不要使用autoconfig，直接写死在配置中，比如china,intl,itu,crm,asc,dw,aliexpress等
+     */
     private String organization;
 
     // architecture layer
+    /**
+     * 用于服务分层对应的架构。如，intl、china。不同的架构使用不同的分层。
+     */
     private String architecture;
 
     // environment, e.g. dev, test or production
+    /**
+     * 应用环境，如：develop/test/product，不同环境使用不同的缺省值，以及作为只用于开发测试功能的限制条件
+     */
     private String environment;
 
     // Java compiler
+    /**
+     * Java字节码编译器，用于动态类的生成，可选：jdk或javassist
+     */
     private String compiler;
 
     // logger
+    /**
+     * 日志输出方式，可选：slf4j,jcl,log4j,log4j2,jdk
+     */
     private String logger;
 
     // registry centers
+    /**
+     * 多个注册中心
+     */
     private List<RegistryConfig> registries;
 
     // monitor center
+    /**
+     * 监控中心
+     */
     private MonitorConfig monitor;
 
     // is default or not
+    /**
+     * 是否默认
+     */
     private Boolean isDefault;
 
     // directory for saving thread dump
+    /**
+     * 用于保存线程转储的目录
+     */
     private String dumpDirectory;
 
+    /**
+     * QoS，全称为Quality of Service
+     * 在Dubbo中，QoS这个概念被用于动态的对服务进行查询和控制。
+     * 例如：对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+     */
+
     // whether to enable qos or not
+    /**
+     * 是否启动QoS（默认为true）
+     */
     private Boolean qosEnable;
 
     // the qos port to listen
+    /**
+     * 启动QoS绑定的端口（默认为22222）
+     */
     private Integer qosPort;
 
     // should we accept foreign ip or not?
+    /**
+     * 是否允许远程访问（默认是false）
+     * 注意，从2.6.4/2.7.0开始，qosAcceptForeignIp默认配置改为false，
+     *  如果qosAcceptForeignIp设置为true，有可能带来安全风险，请仔细评估后再打开。
+     */
     private Boolean qosAcceptForeignIp;
 
     // customized parameters
+    /**
+     * 自定义参数；用于拓展非dubbo的属性
+     */
     private Map<String, String> parameters;
 
     public ApplicationConfig() {

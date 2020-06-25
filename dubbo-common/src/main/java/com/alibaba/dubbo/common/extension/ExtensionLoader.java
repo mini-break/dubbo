@@ -70,11 +70,11 @@ public class ExtensionLoader<T> {
      */
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
     /**
-     * <类,扩展点加载器>
+     * 扩展类与对应的扩展类加载器缓存<扩展类,扩展类加载器>
      */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
     /**
-     * <类,实例>
+     * 扩展类与类初始化后的实例缓存<类,实例>
      */
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
@@ -84,22 +84,27 @@ public class ExtensionLoader<T> {
 
     private final ExtensionFactory objectFactory;
     /**
-     * <类,扩展点名称>
+     * 扩展类与扩展名缓存<扩展类,扩展名称>
      */
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
     /**
-     * 持有扩展点实现类
+     * 普通扩展类缓存,不包括自适应扩展类和Wrapper类
      */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
-
+    /**
+     * 扩展名与@Active缓存
+     */
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
+    /**
+     * 扩展名与扩展对象缓存
+     */
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
     /**
-     * 持有扩展点自适应类实例
+     * 实例化后的自适应扩展对象,只能同时存在一个
      */
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
     /**
-     * 缓存自适应扩展实现类
+     * 自适应扩展类缓存
      */
     private volatile Class<?> cachedAdaptiveClass = null;
     /**
@@ -108,7 +113,7 @@ public class ExtensionLoader<T> {
     private String cachedDefaultName;
     private volatile Throwable createAdaptiveInstanceError;
     /**
-     * 缓存包装类
+     * 包装类缓存
      */
     private Set<Class<?>> cachedWrapperClasses;
 
