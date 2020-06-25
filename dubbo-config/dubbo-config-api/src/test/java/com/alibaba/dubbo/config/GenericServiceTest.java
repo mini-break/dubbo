@@ -42,16 +42,20 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * dubbo里面的GenericService干啥的？
+ * 两个用途一种是泛化服务，一种是泛化引用。前者是为了provider省事，后者是消费者省事
  * GenericServiceTest
  */
 public class GenericServiceTest {
 
     @Test
     public void testGenericServiceException() {
+        // 1.泛化服务
         ServiceConfig<GenericService> service = new ServiceConfig<GenericService>();
         service.setApplication(new ApplicationConfig("generic-provider"));
         service.setRegistry(new RegistryConfig("N/A"));
         service.setProtocol(new ProtocolConfig("dubbo", 29581));
+        // 接口全限定类名
         service.setInterface(DemoService.class.getName());
         service.setRef(new GenericService() {
 
@@ -71,6 +75,7 @@ public class GenericServiceTest {
         });
         service.export();
         try {
+            // 2.泛化引用
             ReferenceConfig<DemoService> reference = new ReferenceConfig<DemoService>();
             reference.setApplication(new ApplicationConfig("generic-consumer"));
             reference.setInterface(DemoService.class);

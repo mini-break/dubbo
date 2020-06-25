@@ -37,6 +37,9 @@ import static org.junit.Assert.assertThat;
 
 public class AbstractConfigTest {
 
+    /**
+     * 读取启动参数变量和 properties 配置到配置对象
+     */
     @Test
     public void testAppendProperties1() throws Exception {
         try {
@@ -85,6 +88,9 @@ public class AbstractConfigTest {
         }
     }
 
+    /**
+     * 从properties文件中获取参数值
+     */
     @Test
     public void testAppendProperties3() throws Exception {
         try {

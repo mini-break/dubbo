@@ -148,6 +148,7 @@ public class ConfigUtils {
                     if (path == null || path.length() == 0) {
                         path = System.getenv(Constants.DUBBO_PROPERTIES_KEY);
                         if (path == null || path.length() == 0) {
+                            // 获取默认dubbo.properties
                             path = Constants.DEFAULT_DUBBO_PROPERTIES;
                         }
                     }

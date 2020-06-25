@@ -72,8 +72,14 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private static final long serialVersionUID = 3033787999037024738L;
 
+    /**
+     * 获取到自适应扩展类DubboProtocol
+     */
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
+    /**
+     * 获取到自适应扩展类JavassistProxyFactory
+     */
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>();
@@ -238,10 +244,15 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
+    /**
+     * 检查填充配置项，按优先级覆盖
+     */
     protected synchronized void doExport() {
+        // 如果取消暴露服务，直接抛异常
         if (unexported) {
             throw new IllegalStateException("Already unexported!");
         }
+        // 如果已经暴露服务，直接返回
         if (exported) {
             return;
         }
@@ -257,6 +268,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
          * 下面几个 if 语句用于检测 provider、application 等核心配置类对象是否为空，
          * 若为空，则尝试从其他配置类对象中获取相应的实例。
          */
+        // 从 ProviderConfig 对象中，读取 application、module、registries、monitor、protocols 配置对象
         if (provider != null) {
             if (application == null) {
                 application = provider.getApplication();
@@ -274,6 +286,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 protocols = provider.getProtocols();
             }
         }
+        // 从 ModuleConfig 对象中，读取 registries、monitor 配置对象
         if (module != null) {
             if (registries == null) {
                 registries = module.getRegistries();
@@ -282,6 +295,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 monitor = module.getMonitor();
             }
         }
+        // 从 ApplicationConfig 对象中，读取 registries、monitor 配置对象
         if (application != null) {
             if (registries == null) {
                 registries = application.getRegistries();
@@ -298,7 +312,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 // 设置 generic = "true"
                 generic = Boolean.TRUE.toString();
             }
-        } else { // ref 非 GenericService 类型
+        } else { // ref 非 GenericService 类型(普通接口的实现)
             try {
                 interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
                         .getContextClassLoader());
@@ -312,7 +326,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             // 设置 generic = "false"
             generic = Boolean.FALSE.toString();
         }
-        // local 和 stub 在功能应该是一致的，用于配置本地存根
+        /**
+         * local 和 stub 在功能应该是一致的，用于配置本地存根
+         * 处理服务接口客户端本地代理( `local` )相关。实际目前已经废弃，使用 `stub` 属性，参见 `AbstractInterfaceConfig#setLocal` 方法
+         */
         if (local != null) {
             if ("true".equals(local)) {
                 local = interfaceName + "Local";
@@ -329,7 +346,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The local implementation class " + localClass.getName() + " not implement interface " + interfaceName);
             }
         }
+        // 处理服务接口客户端本地代理( `stub` )相关
         if (stub != null) {
+            // 设为 true，表示使用缺省代理类名，即：接口名 + Stub 后缀
             if ("true".equals(stub)) {
                 stub = interfaceName + "Stub";
             }
@@ -343,13 +362,18 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The stub implementation class " + stubClass.getName() + " not implement interface " + interfaceName);
             }
         }
-        // 检测各种对象是否为空，为空则新建，或者抛出异常
+        // 校验 ApplicationConfig 配置
         checkApplication();
+        // 校验 RegistryConfig 配置
         checkRegistry();
+        // 校验 ProtocolConfig 配置数组
         checkProtocol();
+        // 读取环境变量和 properties 配置到 ServiceConfig 对象
         appendProperties(this);
+        // 校验 Stub 和 Mock 相关的配置
         checkStub(interfaceClass);
         checkMock(interfaceClass);
+        // 服务路径，缺省为接口名
         if (path == null || path.length() == 0) {
             path = interfaceName;
         }
@@ -398,7 +422,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
-        // 加载注册中心链接
+        /**
+         * 首先遍历 ServiceBean 的 List registries（所有注册中心的配置信息），然后将地址封装成URL对象，
+         * 关于注册中心的所有配置属性，最终转换成url的属性(?属性名=属性值)，
+         * loadRegistries(true)，参数的意思：true，代表服务提供者，false：代表服务消费者，
+         * 如果是服务提供者，则检测注册中心的配置，如果配置了 register=“false”，则忽略该地址，
+         * 如果是服务消费者，并配置了 subscribe=“false”则表示不从该注册中心订阅服务，故也不返回
+         */
         List<URL> registryURLs = loadRegistries(true);
         // 遍历 protocols，并在每个协议下导出服务
         for (ProtocolConfig protocolConfig : protocols) {
@@ -406,6 +436,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
+    /**
+     * 根据不同的协议将服务以URL形式暴露
+     * @param protocolConfig 协议配置对象
+     * @param registryURLs 注册中心链接对象数组
+     */
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         String name = protocolConfig.getName();
         // 如果协议名为空，或空串，则将协议名变量设置为 dubbo
@@ -413,6 +448,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             name = "dubbo";
         }
 
+        /**
+         * 用 Map 存储该协议的所有配置参数.包括：协议名称、Dubbo版本、当前系统时间戳、进程ID、application配置、module配置、默认服务提供者参数(ProviderConfig)、协议配置、服务提供 Dubbo:service的属性
+         */
         Map<String, String> map = new HashMap<String, String>();
         // 添加 side、版本、时间戳以及进程号等信息到 map 中
         map.put(Constants.SIDE_KEY, Constants.PROVIDER_SIDE);
@@ -427,7 +465,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         appendParameters(map, provider, Constants.DEFAULT_KEY);
         appendParameters(map, protocolConfig);
         appendParameters(map, this);
-        // methods 为 MethodConfig 集合，MethodConfig 中存储了 <dubbo:method> 标签的配置信息
+        /**
+         * methods 为 MethodConfig 集合，MethodConfig 中存储了 <dubbo:method> 标签的配置信息
+         * 将 MethodConfig 对象数组，添加到 `map` 集合中，目的是将每个 MethodConfig 和其对应的 ArgumentConfig 对象数组，添加到 map 中
+         */
         if (methods != null && !methods.isEmpty()) {
             for (MethodConfig method : methods) {
                 appendParameters(map, method, method.getName());
@@ -588,12 +629,14 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void exportLocal(URL url) {
+        // 如果 URL 的协议头等于 injvm，说明已经导出到本地了，无需再次导出
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
-                    .setProtocol(Constants.LOCAL_PROTOCOL)
+                    .setProtocol(Constants.LOCAL_PROTOCOL) // 设置协议头为 injvm
                     .setHost(LOCALHOST)
                     .setPort(0);
             StaticContext.getContext(Constants.SERVICE_IMPL_CLASS).put(url.getServiceKey(), getServiceClass(ref));
+            // 创建 Invoker，并导出服务，这里的 protocol 会在运行时调用 InjvmProtocol 的 export 方法
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             exporters.add(exporter);
@@ -762,6 +805,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (provider == null) {
             provider = new ProviderConfig();
         }
+        // 属性配置
         appendProperties(provider);
     }
 
