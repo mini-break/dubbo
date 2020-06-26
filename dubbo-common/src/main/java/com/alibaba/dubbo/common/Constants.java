@@ -358,6 +358,9 @@ public class Constants {
 
     public static final String REGISTRY_SEPARATOR = "|";
 
+    /**
+     * 多个|或多个;分割
+     */
     public static final Pattern REGISTRY_SPLIT_PATTERN = Pattern
             .compile("\\s*[|;]+\\s*");
 

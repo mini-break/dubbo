@@ -169,7 +169,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                     // 若 address 为空，则将其设为 0.0.0.0
                     address = Constants.ANYHOST_VALUE;
                 }
-                // 从系统属性中加载注册中心地址（JVM启动参数优先）
+                // 从系统属性中加载注册中心地址（JVM启动参数优先级最高）
                 String sysaddress = System.getProperty("dubbo.registry.address");
                 if (sysaddress != null && sysaddress.length() > 0) {
                     address = sysaddress;
