@@ -26,6 +26,7 @@ public class WrapperTest {
     @Test
     public void testMain() throws Exception {
         Wrapper w = Wrapper.getWrapper(I1.class);
+        // 获取本类的方法名
         String[] ns = w.getDeclaredMethodNames();
         assertEquals(ns.length, 5);
         ns = w.getMethodNames();

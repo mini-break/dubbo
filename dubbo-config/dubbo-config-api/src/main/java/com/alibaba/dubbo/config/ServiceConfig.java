@@ -73,7 +73,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private static final long serialVersionUID = 3033787999037024738L;
 
     /**
-     * 获取到自适应扩展类DubboProtocol
+     * 获取到自适应扩展类,会动态生成一个 Protocol$Adaptive 实例
      */
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
@@ -575,18 +575,22 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
         if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
                 .hasExtension(url.getProtocol())) {
+            // 加载 ConfiguratorFactory，并生成 Configurator 实例，然后通过实例配置 url
             url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
         }
 
         String scope = url.getParameter(Constants.SCOPE_KEY);
+        // 如果 scope = none，则什么都不做
         // don't export when none is configured
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
+            // scope != remote，导出到本地
             // export to local if the config is not remote (export to remote only when config is remote)
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
+            // scope != local，导出到远程
             // export to remote if the config is not local (export to local only when config is local)
             if (!Constants.SCOPE_LOCAL.toString().equalsIgnoreCase(scope)) {
                 if (logger.isInfoEnabled()) {
@@ -595,8 +599,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 if (registryURLs != null && !registryURLs.isEmpty()) {
                     for (URL registryURL : registryURLs) {
                         url = url.addParameterIfAbsent(Constants.DYNAMIC_KEY, registryURL.getParameter(Constants.DYNAMIC_KEY));
+                        // 加载监视器链接
                         URL monitorUrl = loadMonitor(registryURL);
                         if (monitorUrl != null) {
+                            // 将监视器链接作为参数添加到 url 中
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }
                         if (logger.isInfoEnabled()) {
@@ -609,13 +615,16 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             registryURL = registryURL.addParameter(Constants.PROXY_KEY, proxy);
                         }
 
+                        // 为服务提供类(ref)生成 Invoker
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
+                        // DelegateProviderMetaDataInvoker 用于持有 Invoker 和 ServiceConfig
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
 
+                        // 导出服务，并生成 Exporter
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
                         exporters.add(exporter);
                     }
-                } else {
+                } else { // 不存在注册中心，仅导出服务
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
                     DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
 
