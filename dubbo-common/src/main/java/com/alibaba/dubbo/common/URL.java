@@ -73,20 +73,41 @@ public final class URL implements Serializable {
 
     private static final long serialVersionUID = -1985165475234910535L;
 
+    /**
+     * dubbo中的各种协议 如：dubbo thrift http zk
+     */
     private final String protocol;
 
+    /**
+     * 用户名
+     */
     private final String username;
 
+    /**
+     * 密码
+     */
     private final String password;
 
     // by default, host to registry
+    /**
+     * 主机
+     */
     private final String host;
 
     // by default, port to registry
+    /**
+     * 端口
+     */
     private final int port;
 
+    /**
+     * 接口名称
+     */
     private final String path;
 
+    /**
+     * 参数 key value键值对
+     */
     private final Map<String, String> parameters;
 
     // ==== cache ====
@@ -171,6 +192,7 @@ public final class URL implements Serializable {
     }
 
     /**
+     * 解析url字符串
      * Parse url string
      *
      * @param url URL string
@@ -188,7 +210,8 @@ public final class URL implements Serializable {
         int port = 0;
         String path = null;
         Map<String, String> parameters = null;
-        int i = url.indexOf("?"); // seperator between body and parameters 
+        int i = url.indexOf("?"); // seperator between body and parameters
+        // 解析获取参数
         if (i >= 0) {
             String[] parts = url.substring(i + 1).split("\\&");
             parameters = new HashMap<String, String>();
@@ -206,6 +229,7 @@ public final class URL implements Serializable {
             url = url.substring(0, i);
         }
         i = url.indexOf("://");
+        // 解析获取协议
         if (i >= 0) {
             if (i == 0) throw new IllegalStateException("url missing protocol: \"" + url + "\"");
             protocol = url.substring(0, i);
@@ -221,11 +245,13 @@ public final class URL implements Serializable {
         }
 
         i = url.indexOf("/");
+        // 解析获取接口路径及应用地址
         if (i >= 0) {
             path = url.substring(i + 1);
             url = url.substring(0, i);
         }
         i = url.lastIndexOf("@");
+        // 解析获取用户名/密码
         if (i >= 0) {
             username = url.substring(0, i);
             int j = username.indexOf(":");
@@ -236,6 +262,7 @@ public final class URL implements Serializable {
             url = url.substring(i + 1);
         }
         i = url.indexOf(":");
+        // 解析获取端口
         if (i >= 0 && i < url.length() - 1) {
             port = Integer.parseInt(url.substring(i + 1));
             url = url.substring(0, i);

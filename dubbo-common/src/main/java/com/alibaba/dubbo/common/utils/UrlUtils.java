@@ -32,11 +32,14 @@ public class UrlUtils {
             return null;
         }
         String url;
+        // 地址中存在"://"
         if (address.indexOf("://") >= 0) {
             url = address;
         } else {
+            // 以逗号分割
             String[] addresses = Constants.COMMA_SPLIT_PATTERN.split(address);
             url = addresses[0];
+            // 分割后存在多个地址
             if (addresses.length > 1) {
                 StringBuilder backup = new StringBuilder();
                 for (int i = 1; i < addresses.length; i++) {
@@ -51,6 +54,7 @@ public class UrlUtils {
         // 获取默认协议
         String defaultProtocol = defaults == null ? null : defaults.get("protocol");
         if (defaultProtocol == null || defaultProtocol.length() == 0) {
+            // 未设置协议,则默认为dubbo
             defaultProtocol = "dubbo";
         }
         String defaultUsername = defaults == null ? null : defaults.get("username");
@@ -97,6 +101,7 @@ public class UrlUtils {
                 port = defaultPort;
             } else {
                 changed = true;
+                // 未设置port,则默认为9090
                 port = 9090;
             }
         }
