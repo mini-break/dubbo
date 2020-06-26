@@ -73,7 +73,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private static final long serialVersionUID = 3033787999037024738L;
 
     /**
-     * 获取到自适应扩展类,会动态生成一个 Protocol$Adaptive 实例
+     * 获取到自适应扩展类(通过SPI注解，设置默认的实现类为DubboProtocol),会动态生成一个 Protocol$Adaptive 实例
      */
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
@@ -620,7 +620,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         // DelegateProviderMetaDataInvoker 用于持有 Invoker 和 ServiceConfig
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
 
-                        // 导出服务，并生成 Exporter
+                        /**
+                         * 导出服务，并生成 Exporter
+                         * 此时Invoker对象携带的URL信息中定义的是"registry"，则此处"protocol"加载的是RegistryProtocol对象。
+                         * 也即调用RegistryProtocol的export方法处理Invoker
+                         */
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
                         exporters.add(exporter);
                     }
