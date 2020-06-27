@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common;
 public interface Node {
 
     /**
-     * 获得节点地址
+     * 获得节点地址(获取URL，在dubbo中，注册中心、服务提供者、服务消费者、监控中心等都使用URL描述)
      * get url.
      *
      * @return url.
@@ -38,7 +38,7 @@ public interface Node {
     boolean isAvailable();
 
     /**
-     * 销毁节点
+     * 销毁节点(资源销毁)
      * destroy.
      */
     void destroy();

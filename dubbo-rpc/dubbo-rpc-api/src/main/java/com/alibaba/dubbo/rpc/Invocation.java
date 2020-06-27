@@ -19,6 +19,8 @@ package com.alibaba.dubbo.rpc;
 import java.util.Map;
 
 /**
+ * Invocation 是会话域，它持有调用过程中的变量，比如方法名，参数等(一次具体的调用，包含方法名、参数类型、参数)
+ *
  * Invocation. (API, Prototype, NonThreadSafe)
  *
  * @serial Don't change the class name and package name.
@@ -28,6 +30,7 @@ import java.util.Map;
 public interface Invocation {
 
     /**
+     * 获取调用方法名
      * get method name.
      *
      * @return method name.
@@ -36,6 +39,7 @@ public interface Invocation {
     String getMethodName();
 
     /**
+     * 获取被调用方法的参数类型列表
      * get parameter types.
      *
      * @return parameter types.
@@ -44,6 +48,7 @@ public interface Invocation {
     Class<?>[] getParameterTypes();
 
     /**
+     * 获取被调用方法的参数值数组
      * get arguments.
      *
      * @return arguments.
@@ -52,6 +57,7 @@ public interface Invocation {
     Object[] getArguments();
 
     /**
+     * 获取附加属性
      * get attachments.
      *
      * @return attachments.
@@ -60,6 +66,7 @@ public interface Invocation {
     Map<String, String> getAttachments();
 
     /**
+     * 根据key获取附加属性值
      * get attachment by key.
      *
      * @return attachment value.
@@ -68,6 +75,7 @@ public interface Invocation {
     String getAttachment(String key);
 
     /**
+     * 根据key获取附加属性，如果不存在，取默认值
      * get attachment by key with default value.
      *
      * @return attachment value.
@@ -76,6 +84,7 @@ public interface Invocation {
     String getAttachment(String key, String defaultValue);
 
     /**
+     * 获取当前的invoker
      * get the invoker in current context.
      *
      * @return invoker.

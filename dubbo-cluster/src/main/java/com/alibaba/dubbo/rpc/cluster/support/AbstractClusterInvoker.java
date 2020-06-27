@@ -39,6 +39,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * 该类为Dubbo集群模式的调用模板类，主题解决一个服务有多个服务提供者，此时消息消费端在调用服务时如何选择具体的服务提供者。
+ * 该类需要组织多个服务提供者，并按照指定算法选择一服务提供者进行调用
+ *
  * AbstractClusterInvoker
  *
  */

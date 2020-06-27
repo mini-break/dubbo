@@ -21,6 +21,8 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * Protocol 是服务域，它是 Invoker 暴露和引用的主功能入口，它负责 Invoker 的生命周期管理
+ *
  * Protocol. (API/SPI, Singleton, ThreadSafe)
  */
 @SPI("dubbo")

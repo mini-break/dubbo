@@ -56,7 +56,6 @@ import static com.alibaba.dubbo.common.Constants.CONSUMERS_CATEGORY;
 import static com.alibaba.dubbo.common.Constants.CHECK_KEY;
 
 /**
- * RegistryProtocol
  * RegistryProtocol 可以认为并不是一个真正的协议，他是这些实际的协议（dubbo . rmi）包装者
  */
 public class RegistryProtocol implements Protocol {
