@@ -113,7 +113,13 @@ public class Exchangers {
         return getExchanger(url).connect(url, handler);
     }
 
+    /**
+     * 获取Exchanger
+     * @param url
+     * @return
+     */
     public static Exchanger getExchanger(URL url) {
+        // 默认为HeaderExchanger
         String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER);
         return getExchanger(type);
     }

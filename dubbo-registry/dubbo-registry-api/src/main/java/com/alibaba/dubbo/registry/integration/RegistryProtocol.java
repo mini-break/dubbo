@@ -67,6 +67,10 @@ public class RegistryProtocol implements Protocol {
     //providerurl <--> exporter
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>();
     private Cluster cluster;
+    /**
+     * Protocol$Adaptive,会根据具体的protocol获取真实的Protocol实现类
+     * String extName = (url.getProtocol() == null ? "dubbo" : url.getProtocol());
+     */
     private Protocol protocol;
     private RegistryFactory registryFactory;
     private ProxyFactory proxyFactory;

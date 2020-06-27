@@ -22,6 +22,9 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 动态代理在dubbo的另一个典型应用是proxyFactory
+ * 1.在服务提供端，将服务的具体实现类转为Invoker
+ * 2.在消费端，通过 getProxy(Invoker<T> invoker)将invoker转为客户端需要的接口
  * ProxyFactory. (API/SPI, Singleton, ThreadSafe)
  */
 @SPI("javassist")
@@ -49,9 +52,9 @@ public interface ProxyFactory {
      * create invoker.
      *
      * @param <T>
-     * @param proxy
-     * @param type
-     * @param url
+     * @param proxy 被代理对象
+     * @param type 类型
+     * @param url dubbo统一资源
      * @return invoker
      */
     @Adaptive({Constants.PROXY_KEY})

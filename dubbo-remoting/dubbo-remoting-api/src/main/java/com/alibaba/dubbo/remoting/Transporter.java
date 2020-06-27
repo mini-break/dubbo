@@ -22,6 +22,7 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 对传输层的实现
  * Transporter. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Transport_Layer">Transport Layer</a>
@@ -36,7 +37,7 @@ public interface Transporter {
      * Bind a server.
      *
      * @param url     server url
-     * @param handler
+     * @param handler 通道处理器，用于处理客户端的请求
      * @return server
      * @throws RemotingException
      * @see com.alibaba.dubbo.remoting.Transporters#bind(URL, ChannelHandler...)

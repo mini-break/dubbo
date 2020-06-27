@@ -284,6 +284,7 @@ public class DubboProtocol extends AbstractProtocol {
 
     private ExchangeServer createServer(URL url) {
         // send readonly event when server closes, it's enabled by default
+        // 服务器关闭时发送readonly事件，默认情况下启用
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         // enable heartbeat by default
         // 添加心跳检测配置到 url 中
