@@ -23,6 +23,11 @@ import java.io.Serializable;
 
 /**
  * 方法参数配置。该标签为 <dubbo:method> 的子标签，用于方法参数的特征描述
+ *  <dubbo:service>
+ *          <dubbo:method name="method1">
+ *             <dubbo:argument index="1" callback="true" />  #标识第二个参数是callback类型
+ *          </dubbo:method>
+ *       </dubbo:service>
  * @export
  */
 public class ArgumentConfig implements Serializable {

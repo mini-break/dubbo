@@ -266,6 +266,7 @@ public class RegistryProtocol implements Protocol {
     }
 
     /**
+     * 获取服务URL（exportUrl）
      * Get the address of the providerUrl through the url of the invoker
      *
      * @param origininvoker

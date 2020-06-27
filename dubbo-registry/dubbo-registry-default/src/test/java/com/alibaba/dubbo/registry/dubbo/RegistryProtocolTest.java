@@ -57,12 +57,18 @@ public class RegistryProtocolTest {
     final URL registryUrl = URL.valueOf("registry://127.0.0.1:9090/");
     final private Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
+    /**
+     * 默认端口号
+     */
     @Test
     public void testDefaultPort() {
         RegistryProtocol registryProtocol = new RegistryProtocol();
         assertEquals(9090, registryProtocol.getDefaultPort());
     }
 
+    /**
+     * 导出的服务URL(exportUrl)不能为空
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testExportUrlNull() {
         RegistryProtocol registryProtocol = new RegistryProtocol();
@@ -95,6 +101,9 @@ public class RegistryProtocolTest {
 
     }
 
+    /**
+     * 服务名相同，相同参数覆盖
+     */
     @Test
     public void testNotifyOverride() throws Exception {
         URL newRegistryUrl = registryUrl.addParameter(Constants.EXPORT_KEY, serviceUrl);
@@ -122,6 +131,7 @@ public class RegistryProtocolTest {
 
 
     /**
+     * 服务名不相同，相同参数不覆盖
      * The name of the service does not match and can't override invoker
      * Service name matching, service version number mismatch
      */
