@@ -90,8 +90,8 @@ public abstract class AbstractConfig implements Serializable {
     }
 
     /**
+     * 读取启动参数变量和 properties 配置到配置对象。
      * @param config 配置对象
-     * @Description: 读取启动参数变量和 properties 配置到配置对象。
      */
     protected static void appendProperties(AbstractConfig config) { // eg:<dubbo:provider/>
         if (config == null) {
