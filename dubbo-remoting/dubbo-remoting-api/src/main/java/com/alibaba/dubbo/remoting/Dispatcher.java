@@ -23,6 +23,13 @@ import com.alibaba.dubbo.common.extension.SPI;
 import com.alibaba.dubbo.remoting.transport.dispatcher.all.AllDispatcher;
 
 /**
+ * 消息派发扩展:通道信息派发器，用于指定线程池模型
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol dispatcher="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置dispatcher属性时，使用此配置 -->
+ * <dubbo:provider dispatcher="xxx" />
+ * <p>
  * ChannelHandlerWrapper (SPI, Singleton, ThreadSafe)
  */
 @SPI(AllDispatcher.NAME)

@@ -19,6 +19,14 @@ package com.alibaba.dubbo.rpc;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 暴露监听扩展:当有服务暴露时，触发该事件
+ * <p>
+ * 扩展配置:
+ * <!-- 暴露服务监听 -->
+ * <dubbo:service listener="xxx,yyy" />
+ * <!-- 暴露服务缺省监听器 -->
+ * <dubbo:provider listener="xxx,yyy" />
+ * <p>
  * ExporterListener. (SPI, Singleton, ThreadSafe)
  */
 @SPI

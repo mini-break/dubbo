@@ -27,6 +27,12 @@ import com.alibaba.dubbo.rpc.cluster.loadbalance.RandomLoadBalance;
 import java.util.List;
 
 /**
+ * 负载均衡扩展:从多个服务提者方中选择一个进行调用
+ * <p>
+ * <dubbo:protocol loadbalance="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置loadbalance时，使用此配置 -->
+ * <dubbo:provider loadbalance="xxx" />
+ * <p>
  * LoadBalance. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Load_balancing_(computing)">Load-Balancing</a>

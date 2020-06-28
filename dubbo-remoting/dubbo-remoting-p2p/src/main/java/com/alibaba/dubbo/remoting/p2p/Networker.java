@@ -21,6 +21,13 @@ import com.alibaba.dubbo.common.extension.SPI;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
+ * 组网扩展:对等网络节点组网器
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol networker="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置networker属性时，使用此配置 -->
+ * <dubbo:provider networker="xxx" />
+ * <p>
  * Networker. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Peer-to-peer">Peer-to-peer</a>

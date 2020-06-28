@@ -21,6 +21,13 @@ import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
+ * Telnet 命令扩展:所有服务器均支持 telnet 访问，用于人工干预
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol telnet="xxx,yyy" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置telnet属性时，使用此配置 -->
+ * <dubbo:provider telnet="xxx,yyy" />
+ * <p>
  * TelnetHandler
  */
 @SPI

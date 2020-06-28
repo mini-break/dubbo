@@ -25,6 +25,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * 序列化扩展:将对象转成字节流，用于网络传输，以及将字节流转为对象，用于在收到字节流数据后还原成对象
+ * <p>
+ * 扩展配置:
+ * <!-- 协议的序列化方式 -->
+ * <dubbo:protocol serialization="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置serialization时，使用此配置 -->
+ * <dubbo:provider serialization="xxx" />
+ * <p>
  * Serialization. (SPI, Singleton, ThreadSafe)
  */
 @SPI("hessian2")

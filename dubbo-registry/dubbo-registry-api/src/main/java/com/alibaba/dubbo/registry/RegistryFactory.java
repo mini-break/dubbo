@@ -21,6 +21,16 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 注册中心扩展:负责服务的注册与发现
+ * <p>
+ * 扩展配置:
+ * <!-- 定义注册中心 -->
+ * <dubbo:registry id="xxx1" address="xxx://ip:port" />
+ * <!-- 引用注册中心，如果没有配置registry属性，将在ApplicationContext中自动扫描registry配置 -->
+ * <dubbo:service registry="xxx1" />
+ * <!-- 引用注册中心缺省值，当<dubbo:service>没有配置registry属性时，使用此配置 -->
+ * <dubbo:provider registry="xxx1" />
+ * <p>
  * RegistryFactory. (SPI, Singleton, ThreadSafe)
  *
  * @see com.alibaba.dubbo.registry.support.AbstractRegistryFactory
@@ -29,6 +39,15 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface RegistryFactory {
 
     /**
+     * 连接注册中心.
+     * <p>
+     * 连接注册中心需处理契约：<br>
+     * 1. 当设置check=false时表示不检查连接，否则在连接不上时抛出异常。<br>
+     * 2. 支持URL上的username:password权限认证。<br>
+     * 3. 支持backup=10.20.153.10备选注册中心集群地址。<br>
+     * 4. 支持file=registry.cache本地磁盘文件缓存。<br>
+     * 5. 支持timeout=1000请求超时设置。<br>
+     * 6. 支持session=60000会话超时或过期设置。<br>
      * Connect to the registry
      * <p>
      * Connecting the registry needs to support the contract: <br>
@@ -39,8 +58,8 @@ public interface RegistryFactory {
      * 5. Support the timeout=1000 request timeout setting.<br>
      * 6. Support session=60000 session timeout or expiration settings.<br>
      *
-     * @param url Registry address, is not allowed to be empty
-     * @return Registry reference, never return empty value
+     * @param url Registry address, is not allowed to be empty  注册中心地址，不允许为空
+     * @return Registry reference, never return empty value  注册中心引用，总不返回空
      */
     @Adaptive({"protocol"})
     Registry getRegistry(URL url);

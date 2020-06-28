@@ -19,6 +19,13 @@ package com.alibaba.dubbo.common.status;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 状态检查扩展:检查服务依赖各种资源的状态，此状态检查可同时用于 telnet 的 status 命令和 hosting 的 status 页面
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol status="xxx,yyy" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置status属性时，使用此配置 -->
+ * <dubbo:provider status="xxx,yyy" />
+ * <p>
  * StatusChecker
  */
 @SPI

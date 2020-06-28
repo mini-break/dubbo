@@ -23,11 +23,17 @@ import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
 
 /**
+ * 集群扩展:当有多个服务提供方时，将多个服务提供方组织成一个集群，并伪装成一个提供方
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol cluster="xxx" />
+ * <!-- 缺省值配置，如果<dubbo:protocol>没有配置cluster时，使用此配置 -->
+ * <dubbo:provider cluster="xxx" />
+ * <p>
  * Cluster. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Computer_cluster">Cluster</a>
  * <a href="http://en.wikipedia.org/wiki/Fault-tolerant_system">Fault-Tolerant</a>
- *
  */
 @SPI(FailoverCluster.NAME)
 public interface Cluster {

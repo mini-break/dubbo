@@ -22,7 +22,17 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Protocol 是服务域，它是 Invoker 暴露和引用的主功能入口，它负责 Invoker 的生命周期管理
- *
+ * 协议扩展: RPC 协议扩展，封装远程调用细节
+ * <p>
+ * 扩展配置:
+ * <!-- 声明协议，如果没有配置id，将以name为id -->
+ * <dubbo:protocol id="xxx1" name="xxx" />
+ * <!-- 引用协议，如果没有配置protocol属性，将在ApplicationContext中自动扫描protocol配置 -->
+ * <dubbo:service protocol="xxx1" />
+ * <!-- 引用协议缺省值，当<dubbo:service>没有配置prototol属性时，使用此配置 -->
+ * <dubbo:provider protocol="xxx1" />
+ * <p>
+ * <p>
  * Protocol. (API/SPI, Singleton, ThreadSafe)
  */
 @SPI("dubbo")
@@ -41,21 +51,19 @@ public interface Protocol {
      * 2. export()必须是幂等的，也就是暴露同一个URL的Invoker两次，和暴露一次没有区别。<br>
      * 3. export()传入的Invoker由框架实现并传入，协议不需要关心。<br>
      *
-     * @param <T> 服务的类型
+     * @param <T>     服务的类型
      * @param invoker 服务的执行体
-     * @return exporter 暴露服务的引用，用于取消暴露
-     * @throws RpcException 当暴露服务出错时抛出，比如端口已占用
-     *
-     * Export service for remote invocation: <br>
-     * 1. Protocol should record request source address after receive a request:
-     * RpcContext.getContext().setRemoteAddress();<br>
-     * 2. export() must be idempotent, that is, there's no difference between invoking once and invoking twice when
-     * export the same URL<br>
-     * 3. Invoker instance is passed in by the framework, protocol needs not to care <br>
-     *
      * @param <T>     Service type
      * @param invoker Service invoker
      * @return exporter reference for exported service, useful for unexport the service later
+     * @throws RpcException 当暴露服务出错时抛出，比如端口已占用
+     *                      <p>
+     *                      Export service for remote invocation: <br>
+     *                      1. Protocol should record request source address after receive a request:
+     *                      RpcContext.getContext().setRemoteAddress();<br>
+     *                      2. export() must be idempotent, that is, there's no difference between invoking once and invoking twice when
+     *                      export the same URL<br>
+     *                      3. Invoker instance is passed in by the framework, protocol needs not to care <br>
      * @throws RpcException thrown when error occurs during export the service, for example: port is occupied
      */
     @Adaptive
@@ -67,24 +75,22 @@ public interface Protocol {
      * 2. refer()返回的Invoker由协议实现，协议通常需要在此Invoker中发送远程请求。<br>
      * 3. 当url中有设置check=false时，连接失败不能抛出异常，需内部自动恢复。<br>
      *
-     * @param <T> 服务的类型
+     * @param <T>  服务的类型
      * @param type 服务的类型
-     * @param url 远程服务的URL地址
-     * @return invoker 服务的本地代理
-     * @throws RpcException 当连接服务提供方失败时抛出
-     *
-     * Refer a remote service: <br>
-     * 1. When user calls `invoke()` method of `Invoker` object which's returned from `refer()` call, the protocol
-     * needs to correspondingly execute `invoke()` method of `Invoker` object <br>
-     * 2. It's protocol's responsibility to implement `Invoker` which's returned from `refer()`. Generally speaking,
-     * protocol sends remote request in the `Invoker` implementation. <br>
-     * 3. When there's check=false set in URL, the implementation must not throw exception but try to recover when
-     * connection fails.
-     *
+     * @param url  远程服务的URL地址
      * @param <T>  Service type
      * @param type Service class
      * @param url  URL address for the remote service
      * @return invoker service's local proxy
+     * @throws RpcException 当连接服务提供方失败时抛出
+     *                      <p>
+     *                      Refer a remote service: <br>
+     *                      1. When user calls `invoke()` method of `Invoker` object which's returned from `refer()` call, the protocol
+     *                      needs to correspondingly execute `invoke()` method of `Invoker` object <br>
+     *                      2. It's protocol's responsibility to implement `Invoker` which's returned from `refer()`. Generally speaking,
+     *                      protocol sends remote request in the `Invoker` implementation. <br>
+     *                      3. When there's check=false set in URL, the implementation must not throw exception but try to recover when
+     *                      connection fails.
      * @throws RpcException when there's any error while connecting to the service provider
      */
     @Adaptive

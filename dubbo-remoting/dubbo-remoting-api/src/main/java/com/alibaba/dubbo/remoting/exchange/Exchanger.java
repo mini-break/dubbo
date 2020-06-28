@@ -24,7 +24,13 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchanger;
 
 /**
- * 基于传输层之上，实现 Request-Response 信息交换语义
+ * 信息交换扩展:基于传输层之上，实现 Request-Response 信息交换语义
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol exchanger="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置exchanger属性时，使用此配置 -->
+ * <dubbo:provider exchanger="xxx" />
+ * <p>
  * Exchanger. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Message_Exchange_Pattern">Message Exchange Pattern</a>

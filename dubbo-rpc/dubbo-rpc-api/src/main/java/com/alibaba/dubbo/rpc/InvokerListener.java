@@ -19,6 +19,14 @@ package com.alibaba.dubbo.rpc;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 引用监听扩展:当有服务引用时，触发该事件
+ * <p>
+ * 扩展配置:
+ * <!-- 引用服务监听 -->
+ * <dubbo:reference listener="xxx,yyy" />
+ * <!-- 引用服务缺省监听器 -->
+ * <dubbo:consumer listener="xxx,yyy" />
+ * <p>
  * InvokerListener. (SPI, Singleton, ThreadSafe)
  */
 @SPI

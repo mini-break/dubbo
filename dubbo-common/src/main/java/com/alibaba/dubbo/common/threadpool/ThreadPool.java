@@ -24,6 +24,13 @@ import com.alibaba.dubbo.common.extension.SPI;
 import java.util.concurrent.Executor;
 
 /**
+ * 线程池扩展:服务提供方线程池实现策略，当服务器收到一个请求时，需要在线程池中创建一个线程去执行服务提供方业务逻辑
+ * <p>
+ * 扩展配置:
+ * <dubbo:protocol threadpool="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置threadpool时，使用此配置 -->
+ * <dubbo:provider threadpool="xxx" />
+ * <p>
  * ThreadPool
  */
 @SPI("fixed")

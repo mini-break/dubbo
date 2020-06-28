@@ -22,6 +22,15 @@ import com.alibaba.dubbo.common.extension.SPI;
 import com.alibaba.dubbo.rpc.Invocation;
 
 /**
+ * 缓存扩展:用请求参数作为 key，缓存返回结果
+ * <p>
+ * 扩展配置:
+ * <dubbo:service cache="lru" />
+ * <!-- 方法级缓存 -->
+ * <dubbo:service><dubbo:method cache="lru" /></dubbo:service>
+ * <!-- 缺省值设置，当<dubbo:service>没有配置cache属性时，使用此配置 -->
+ * <dubbo:provider cache="xxx,yyy" />
+ * <p>
  * CacheFactory
  */
 @SPI("lru")

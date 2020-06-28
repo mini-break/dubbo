@@ -19,6 +19,7 @@ package com.alibaba.dubbo.container;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 容器扩展:服务容器扩展，用于自定义加载内容
  * Container. (SPI, Singleton, ThreadSafe)
  */
 @SPI("spring")

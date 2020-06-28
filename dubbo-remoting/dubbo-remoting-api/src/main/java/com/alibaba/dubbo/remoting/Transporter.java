@@ -22,7 +22,17 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * 对传输层的实现(远程通讯的服务器及客户端传输实现)
+ * 网络传输扩展:远程通讯的服务器及客户端传输实现
+ * 对传输层的实现
+ * <p>
+ * 扩展配置:
+ * <!-- 服务器和客户端使用相同的传输实现 -->
+ * <dubbo:protocol transporter="xxx" />
+ * <!-- 服务器和客户端使用不同的传输实现 -->
+ * <dubbo:protocol server="xxx" client="xxx" />
+ * <!-- 缺省值设置，当<dubbo:protocol>没有配置transporter/server/client属性时，使用此配置 -->
+ * <dubbo:provider transporter="xxx" server="xxx" client="xxx" />
+ * <p>
  * Transporter. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Transport_Layer">Transport Layer</a>

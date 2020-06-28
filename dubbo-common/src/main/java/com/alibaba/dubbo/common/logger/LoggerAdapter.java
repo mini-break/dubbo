@@ -21,6 +21,13 @@ import com.alibaba.dubbo.common.extension.SPI;
 import java.io.File;
 
 /**
+ * 日志适配扩展:日志输出适配扩展点
+ * <p>
+ * 扩展配置:
+ * <dubbo:application logger="xxx" />
+ * 或者
+ * -Ddubbo:application.logger=xxx
+ * <p>
  * Logger provider
  */
 @SPI

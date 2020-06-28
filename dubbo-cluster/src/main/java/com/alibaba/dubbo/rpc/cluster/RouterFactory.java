@@ -21,6 +21,7 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 路由扩展:从多个服务提供方中选择一个进行调用
  * RouterFactory. (SPI, Singleton, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Routing">Routing</a>

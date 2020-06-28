@@ -22,6 +22,13 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 验证扩展:参数验证扩展点
+ * <p>
+ * 扩展配置:
+ * <dubbo:service validation="xxx,yyy" />
+ * <!-- 缺省值设置，当<dubbo:service>没有配置validation属性时，使用此配置 -->
+ * <dubbo:provider validation="xxx,yyy" />
+ * <p>
  * Validation
  */
 @SPI("jvalidation")

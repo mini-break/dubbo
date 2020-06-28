@@ -21,6 +21,12 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
+ * 监控中心扩展:负责服务调用次和调用时间的监控
+ * <p>
+ * 扩展配置:
+ * <!-- 定义监控中心 -->
+ * <dubbo:monitor address="xxx://ip:port" />
+ * <p>
  * MonitorFactory. (SPI, Singleton, ThreadSafe)
  */
 @SPI("dubbo")
