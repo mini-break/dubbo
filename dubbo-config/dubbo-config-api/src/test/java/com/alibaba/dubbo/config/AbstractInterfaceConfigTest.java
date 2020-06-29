@@ -71,6 +71,10 @@ public class AbstractInterfaceConfigTest {
         }
     }
 
+    /**
+     * <dubbo:registry address="..." /> address地址不能为空
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void testCheckRegistry2() throws Exception {
         InterfaceConfig interfaceConfig = new InterfaceConfig();
@@ -104,6 +108,9 @@ public class AbstractInterfaceConfigTest {
         }
     }
 
+    /**
+     * <dubbo:application name=""/> name不能为空
+     */
     @Test(expected = IllegalStateException.class)
     public void checkApplication2() throws Exception {
         InterfaceConfig interfaceConfig = new InterfaceConfig();
@@ -394,6 +401,7 @@ public class AbstractInterfaceConfigTest {
             os = new BufferedOutputStream(new FileOutputStream(dubboProperties));
             Properties properties = new Properties();
             properties.put(key, value);
+            // store方法是写入输出流，“只有”把properties对象设置键值对之后，“才能”去写入输出流以实现真正的输出到文件内
             properties.store(os, "");
             os.flush();
             os.close();

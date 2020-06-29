@@ -112,7 +112,7 @@ public abstract class AbstractConfig implements Serializable {
                     // 获得属性名，例如 `ApplicationConfig#setName(...)` 方法，对应的属性名为 name
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), ".");
 
-                    // 【JVM启动参数变量】优先从带有 `Config#id` 的配置中获取，例如：`dubbo.application.demo-provider.name`
+                    // 1.【JVM启动参数变量】优先从带有 `Config#id` 的配置中获取，例如：`dubbo.application.demo-provider.name`
                     String value = null;
                     if (config.getId() != null && config.getId().length() > 0) {
                         // 带有 `Config#id`
@@ -123,7 +123,7 @@ public abstract class AbstractConfig implements Serializable {
                             logger.info("Use System Property " + pn + " to config dubbo");
                         }
                     }
-                    // 【JVM启动参数变量】获取不到，其次不带 `Config#id` 的配置中获取，例如：`dubbo.application.name`
+                    // 2.【JVM启动参数变量】获取不到，其次不带 `Config#id` 的配置中获取，例如：`dubbo.application.name`
                     if (value == null || value.length() == 0) {
                         // 不带 `Config#id`
                         String pn = prefix + property;
@@ -132,6 +132,7 @@ public abstract class AbstractConfig implements Serializable {
                             logger.info("Use System Property " + pn + " to config dubbo");
                         }
                     }
+                    // 3. get/is 方法中获取
                     if (value == null || value.length() == 0) {
                         // 覆盖优先级为：启动参数变量 > XML 配置 > properties 配置，因此需要使用 getter 判断 XML 是否已经设置
                         Method getter;

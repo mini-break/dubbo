@@ -104,14 +104,19 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     // the scope for referring/exporting a service, if it's local, it means searching in current JVM only.
     private String scope;
 
+    /**
+     * 检查并处理注册配置RegistryConfig
+     */
     protected void checkRegistry() {
         // for backward compatibility
         if (registries == null || registries.isEmpty()) {
             String address = ConfigUtils.getProperty("dubbo.registry.address");
             if (address != null && address.length() > 0) {
                 registries = new ArrayList<RegistryConfig>();
+                // 一个或多个|分割
                 String[] as = address.split("\\s*[|]+\\s*");
                 for (String a : as) {
+                    // 构造注册中心配置
                     RegistryConfig registryConfig = new RegistryConfig();
                     registryConfig.setAddress(a);
                     registries.add(registryConfig);
@@ -132,6 +137,9 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
     }
 
+    /**
+     * 检查并处理应用信息配置ApplicationConfig
+     */
     @SuppressWarnings("deprecation")
     protected void checkApplication() {
         // for backward compatibility
