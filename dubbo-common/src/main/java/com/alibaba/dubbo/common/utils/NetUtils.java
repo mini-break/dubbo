@@ -50,6 +50,7 @@ public class NetUtils {
     private static final int MIN_PORT = 0;
     private static final int MAX_PORT = 65535;
     private static final Pattern ADDRESS_PATTERN = Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}$");
+    // 127 开头的ip地址
     private static final Pattern LOCAL_IP_PATTERN = Pattern.compile("127(\\.\\d{1,3}){3}$");
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
     private static final Map<String, String> hostNameCache = new LRUCache<String, String>(1000);
@@ -196,6 +197,7 @@ public class NetUtils {
             logger.warn(e);
         }
         try {
+            // 获取本机所有网卡信息
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             if (interfaces != null) {
                 while (interfaces.hasMoreElements()) {
@@ -207,6 +209,7 @@ public class NetUtils {
                                 try {
                                     InetAddress address = addresses.nextElement();
                                     if (isValidAddress(address)) {
+                                        // 返回第一个符合规则IP
                                         return address;
                                     }
                                 } catch (Throwable e) {

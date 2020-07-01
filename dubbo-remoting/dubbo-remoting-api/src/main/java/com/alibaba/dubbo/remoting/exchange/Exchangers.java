@@ -66,6 +66,7 @@ public class Exchangers {
         if (handler == null) {
             throw new IllegalArgumentException("handler == null");
         }
+        // 设置编码
         url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange");
         /**
          * 获取 Exchanger，默认为 HeaderExchanger。

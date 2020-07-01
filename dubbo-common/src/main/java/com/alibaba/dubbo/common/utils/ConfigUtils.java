@@ -186,6 +186,9 @@ public class ConfigUtils {
     /**
      * System environment -> System properties
      *
+     * System environment: 指操作系统里设置的环境变量
+     * System properties: JVM 启动参数
+     *
      * @param key key
      * @return value
      */

@@ -22,7 +22,7 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * 动态代理扩展:将 Invoker 接口转换成业务接口
+ * 动态代理扩展:将 Invoker 接口转换成业务接口/将服务转换为Invoker
  * <p>
  * 扩展配置:
  * <dubbo:protocol proxy="xxx" />

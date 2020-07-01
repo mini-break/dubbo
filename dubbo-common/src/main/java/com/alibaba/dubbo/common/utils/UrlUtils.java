@@ -39,7 +39,7 @@ public class UrlUtils {
             // 以逗号分割
             String[] addresses = Constants.COMMA_SPLIT_PATTERN.split(address);
             url = addresses[0];
-            // 分割后存在多个地址
+            // 分割后存在多个地址,则以备份的方式设置其它地址
             if (addresses.length > 1) {
                 StringBuilder backup = new StringBuilder();
                 for (int i = 1; i < addresses.length; i++) {
@@ -140,6 +140,7 @@ public class UrlUtils {
         }
         List<URL> registries = new ArrayList<URL>();
         for (String addr : addresses) {
+            // 一个个解析address
             registries.add(parseURL(addr, defaults));
         }
         return registries;

@@ -44,6 +44,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface Transporter {
 
     /**
+     * 绑定一个服务器
      * Bind a server.
      *
      * @param url     server url
@@ -56,6 +57,7 @@ public interface Transporter {
     Server bind(URL url, ChannelHandler handler) throws RemotingException;
 
     /**
+     * 连接一个服务器，即创建一个客户端
      * Connect to a server.
      *
      * @param url     server url

@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.demo.provider;
+package com.alibaba.dubbo.demo.provider.mytest;
 
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 

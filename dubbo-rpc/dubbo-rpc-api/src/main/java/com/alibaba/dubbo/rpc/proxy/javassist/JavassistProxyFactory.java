@@ -36,6 +36,13 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
         return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }
 
+    /**
+     * @param proxy 实现类
+     * @param type  接口类型
+     * @param url   dubbo统一资源
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
         // 为目标类创建 Wrapper

@@ -77,8 +77,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         beanDefinition.setBeanClass(beanClass);
         beanDefinition.setLazyInit(false);
         String id = element.getAttribute("id");
+        // id未配置
         if ((id == null || id.length() == 0) && required) {
             String generatedBeanName = element.getAttribute("name");
+            // name未配置
             if (generatedBeanName == null || generatedBeanName.length() == 0) {
                 if (ProtocolConfig.class.equals(beanClass)) {
                     generatedBeanName = "dubbo";
@@ -86,11 +88,13 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                     generatedBeanName = element.getAttribute("interface");
                 }
             }
+            // 以上都未配置,则使用类的全限定类名为唯一标识
             if (generatedBeanName == null || generatedBeanName.length() == 0) {
                 generatedBeanName = beanClass.getName();
             }
             id = generatedBeanName;
             int counter = 2;
+            // 如果容器中已经存在这个bean,则通过加序号区分
             while (parserContext.getRegistry().containsBeanDefinition(id)) {
                 id = generatedBeanName + (counter++);
             }
@@ -224,6 +228,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                     }
                                     reference = new RuntimeBeanReference(value);
                                 }
+                                /**
+                                 * <dubbo:registry address="multicast://224.5.6.7:1234"/>
+                                 * address属性从这里加入
+                                 */
                                 beanDefinition.getPropertyValues().addPropertyValue(propertyName, reference);
                             }
                         }
@@ -236,6 +244,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         for (int i = 0; i < len; i++) {
             Node node = attributes.item(i);
             String name = node.getLocalName();
+            // 除了上面有set方法的属性,其它都当前parameter参数值加入BeanDefinition
             if (!props.contains(name)) {
                 if (parameters == null) {
                     parameters = new ManagedMap();

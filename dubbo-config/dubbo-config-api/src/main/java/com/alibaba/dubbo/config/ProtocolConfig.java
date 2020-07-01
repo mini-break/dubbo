@@ -49,7 +49,7 @@ public class ProtocolConfig extends AbstractConfig {
 
     // service IP address (when there are multiple network cards available)
     /**
-     * 服务主机名，多网卡选择或指定VIP及域名时使用，为空则自动查找本机IP，-建议不要配置，让Dubbo自动获取本机IP
+     * 服务主机名，多网卡选择或指定VIP及域名时使用，为空则自动查找本机IP，建议不要配置，让Dubbo自动获取本机IP
      */
     private String host;
 

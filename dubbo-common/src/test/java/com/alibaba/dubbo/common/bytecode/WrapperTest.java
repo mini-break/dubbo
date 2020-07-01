@@ -77,6 +77,11 @@ public class WrapperTest {
     public void test_getMethodNames_ContainExtendsParentMethods() throws Exception {
         assertArrayEquals(new String[]{"hello", "world"}, Wrapper.getWrapper(Son.class).getMethodNames());
     }
+    @Test
+    public void my() throws Exception {
+        Wrapper w = Wrapper.getWrapper(Car.class);
+
+    }
 
     public static interface I0 {
         String getName();
@@ -146,4 +151,14 @@ public class WrapperTest {
 
     public static class EmptyServiceImpl implements EmptyService {
     }
+
+    // ===========my begin========
+
+    public interface Car {
+        String getBrand();
+        long getWeight();
+        void make(String brand, long weight);
+    }
+
+    // ===========my end==========
 }

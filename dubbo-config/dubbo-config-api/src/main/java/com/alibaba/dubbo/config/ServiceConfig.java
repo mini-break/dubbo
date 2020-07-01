@@ -93,12 +93,14 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      */
     private String interfaceName;
     /**
-     *
+     * 服务接口,对应interface
+     * <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
      */
     private Class<?> interfaceClass;
     // reference to interface impl
     /**
-     * 服务对象实现引用
+     * 服务对象实现引用,对应接口具体实现类ref
+     * <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
      */
     private T ref;
     // service name
@@ -637,7 +639,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             registryURL = registryURL.addParameter(Constants.PROXY_KEY, proxy);
                         }
 
-                        // 为服务提供类(ref)生成 Invoker
+                        /**
+                         * 为服务提供类(ref)生成 Invoker
+                         * 并在注册URL上加入服务暴露地址
+                         */
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         // DelegateProviderMetaDataInvoker 用于持有 Invoker 和 ServiceConfig
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
@@ -694,15 +699,28 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * @return
      */
     private String findConfigedHosts(ProtocolConfig protocolConfig, List<URL> registryURLs, Map<String, String> map) {
+        // 任何IP标识
         boolean anyhost = false;
 
+        /**
+         * 1.从操作系统环境变量/JVM启动参数中获取IP
+         * JVM启动参数配置: -DDUBBO_IP_TO_BIND=1.2.3.4
+         */
         String hostToBind = getValueFromConfig(protocolConfig, Constants.DUBBO_IP_TO_BIND);
+        // 校验IP不能为localhost, 0.0.0.0, 127开头
         if (hostToBind != null && hostToBind.length() > 0 && isInvalidLocalHost(hostToBind)) {
             throw new IllegalArgumentException("Specified invalid bind ip from property:" + Constants.DUBBO_IP_TO_BIND + ", value:" + hostToBind);
         }
 
         // if bind ip is not found in environment, keep looking up
         if (hostToBind == null || hostToBind.length() == 0) {
+            /**
+             * 2.通过读取 Dubbo 配置文件获取 IP
+             * <!-- protocol 指定整个 Dubbo 应用服务默认 IP -->
+             * <dubbo:protocol host="1.2.3.4"/>
+             * <!-- provider 指定 Dubbo 应用具体某个服务默认 IP -->
+             * <dubbo:provider host="1.2.3.4"/>
+             */
             hostToBind = protocolConfig.getHost();
             if (provider != null && (hostToBind == null || hostToBind.length() == 0)) {
                 hostToBind = provider.getHost();
@@ -710,6 +728,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             if (isInvalidLocalHost(hostToBind)) {
                 anyhost = true;
                 try {
+                    /**
+                     * 3.通过调用 InetAddress.getLocalHost().getHostAddress() 获取本地 IP。
+                     * 该方法将会获取机器 hostname，然后再在 /etc/hosts 配置文件中查找 hostname 对应的配置 IP
+                     */
                     hostToBind = InetAddress.getLocalHost().getHostAddress();
                 } catch (UnknownHostException e) {
                     logger.warn(e.getMessage(), e);
@@ -726,6 +748,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                                 try {
                                     SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort());
                                     socket.connect(addr, 1000);
+                                    /**
+                                     * 4.通过 socket 连接注册中心获取本机 IP
+                                     */
                                     hostToBind = socket.getLocalAddress().getHostAddress();
                                     break;
                                 } finally {
@@ -740,6 +765,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         }
                     }
                     if (isInvalidLocalHost(hostToBind)) {
+                        /**
+                         * 5.如果上述几步都不成功，Dubbo 将会轮询本机所有网卡，直到找到合适的 IP 地址
+                         */
                         hostToBind = getLocalHost();
                     }
                 }
@@ -828,9 +856,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     private String getValueFromConfig(ProtocolConfig protocolConfig, String key) {
+        // 例 DUBBO_DUBBO_IP_TO_BIND
         String protocolPrefix = protocolConfig.getName().toUpperCase() + "_";
+        // 1.先根据 协议名_DUBBO_IP_TO_BIND 在操作系统环境变量里查找
         String port = ConfigUtils.getSystemProperty(protocolPrefix + key);
         if (port == null || port.length() == 0) {
+            // 2.再根据 DUBBO_IP_TO_BIND 在JVM启动参数里查找
             port = ConfigUtils.getSystemProperty(key);
         }
         return port;
