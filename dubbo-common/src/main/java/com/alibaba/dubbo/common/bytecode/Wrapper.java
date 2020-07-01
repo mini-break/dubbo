@@ -97,8 +97,10 @@ public abstract class Wrapper {
      */
     public static Wrapper getWrapper(Class<?> c) {
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
+            // 返回该对象的超类
             c = c.getSuperclass();
 
+        // 如果超类就是Object，则返回子类Wrapper
         if (c == Object.class)
             return OBJECT_WRAPPER;
 
