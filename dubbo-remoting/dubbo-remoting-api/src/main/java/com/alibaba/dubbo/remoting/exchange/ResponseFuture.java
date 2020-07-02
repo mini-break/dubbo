@@ -19,6 +19,11 @@ package com.alibaba.dubbo.remoting.exchange;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
+ * 该接口是响应future接口，该接口的设计意图跟java.util.concurrent.Future很类似。
+ * 发送出去的消息，泼出去的水，只有等到对方主动响应才能得到结果，
+ * 但是请求方需要去主动回调该请求的结果，就显得有些艰难，所有产生了这样一个接口，
+ * 它能够获取任务执行结果、可以核对请求消息是否被响应，还能设置回调来支持异步
+ *
  * Future. (API/SPI, Prototype, ThreadSafe)
  *
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)
@@ -27,6 +32,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 public interface ResponseFuture {
 
     /**
+     * 获得结果
      * get result.
      *
      * @return result.
@@ -34,6 +40,7 @@ public interface ResponseFuture {
     Object get() throws RemotingException;
 
     /**
+     * 获得具有指定超时的结果
      * get result with the specified timeout.
      *
      * @param timeoutInMillis timeout.
@@ -42,6 +49,7 @@ public interface ResponseFuture {
     Object get(int timeoutInMillis) throws RemotingException;
 
     /**
+     * 设置回调
      * set callback.
      *
      * @param callback
@@ -49,6 +57,7 @@ public interface ResponseFuture {
     void setCallback(ResponseCallback callback);
 
     /**
+     * 检测是否完成
      * check is done.
      *
      * @return done or not.

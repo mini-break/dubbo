@@ -21,11 +21,14 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
 
 /**
+ * 该接口继承了ChannelHandler, TelnetHandler接口，是信息交换处理器接口
+ *
  * ExchangeHandler. (API, Prototype, ThreadSafe)
  */
 public interface ExchangeHandler extends ChannelHandler, TelnetHandler {
 
     /**
+     * 回复请求结果
      * reply.
      *
      * @param channel

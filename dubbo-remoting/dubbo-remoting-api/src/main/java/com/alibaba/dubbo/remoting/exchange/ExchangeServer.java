@@ -22,11 +22,14 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
+ * 在Server接口基础上新定义了两个方法
+ *
  * ExchangeServer. (API/SPI, Prototype, ThreadSafe)
  */
 public interface ExchangeServer extends Server {
 
     /**
+     * 获得通道集合
      * get channels.
      *
      * @return channels
@@ -34,6 +37,7 @@ public interface ExchangeServer extends Server {
     Collection<ExchangeChannel> getExchangeChannels();
 
     /**
+     * 根据远程地址获得对应的信息通道
      * get channel.
      *
      * @param remoteAddress

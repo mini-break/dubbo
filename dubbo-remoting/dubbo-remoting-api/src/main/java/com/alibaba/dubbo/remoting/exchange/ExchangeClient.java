@@ -19,9 +19,9 @@ package com.alibaba.dubbo.remoting.exchange;
 import com.alibaba.dubbo.remoting.Client;
 
 /**
+ * 该接口继承了Client和ExchangeChannel，是信息交换客户端接口，其中没有定义多余的方法
+ *
  * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
- *
- *
  */
 public interface ExchangeClient extends Client, ExchangeChannel {
 

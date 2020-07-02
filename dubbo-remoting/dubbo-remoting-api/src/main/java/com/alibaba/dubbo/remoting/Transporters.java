@@ -44,6 +44,7 @@ public class Transporters {
     }
 
     public static Server bind(String url, ChannelHandler... handler) throws RemotingException {
+        // 字符串的url转化为URL对象
         return bind(URL.valueOf(url), handler);
     }
 
