@@ -27,12 +27,15 @@ import com.alibaba.dubbo.remoting.exchange.support.Replier;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
 
 /**
+ * Exchangers也用到了外观模式
+ *
  * Exchanger facade. (API, Static, ThreadSafe)
  */
 public class Exchangers {
 
     static {
         // check duplicate jar package
+        // 检查重复的 jar 包
         Version.checkDuplicate(Exchangers.class);
     }
 

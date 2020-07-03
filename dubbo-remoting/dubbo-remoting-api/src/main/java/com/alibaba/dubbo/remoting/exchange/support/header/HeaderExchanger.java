@@ -26,6 +26,9 @@ import com.alibaba.dubbo.remoting.exchange.Exchanger;
 import com.alibaba.dubbo.remoting.transport.DecodeHandler;
 
 /**
+ * 该类继承了Exchanger接口，是Exchanger接口的默认实现，实现了Exchanger接口定义的两个方法，
+ * 分别调用的是Transporters的连接和绑定方法，再利用这这两个方法返回的客户端和服务端实例来创建信息交换的客户端和服务端
+ *
  * DefaultMessenger
  */
 public class HeaderExchanger implements Exchanger {

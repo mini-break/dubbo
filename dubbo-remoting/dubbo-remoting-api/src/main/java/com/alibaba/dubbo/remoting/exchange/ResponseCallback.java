@@ -17,11 +17,14 @@
 package com.alibaba.dubbo.remoting.exchange;
 
 /**
+ * 该接口是回调的接口，定义了两个方法，分别是处理正常的响应结果和处理异常
+ *
  * Callback
  */
 public interface ResponseCallback {
 
     /**
+     * 处理请求
      * done.
      *
      * @param response
@@ -29,6 +32,7 @@ public interface ResponseCallback {
     void done(Object response);
 
     /**
+     * 处理异常
      * caught exception.
      *
      * @param exception
