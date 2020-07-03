@@ -48,6 +48,7 @@ public class FailbackRegistryTest {
     public void setUp() throws Exception {
         service = "com.alibaba.dubbo.test.DemoService";
         serviceUrl = URL.valueOf("remote://127.0.0.1/demoservice?method=get");
+        // 设置本地磁盘缓存文件路径file=N/A
         registryUrl = URL.valueOf("http://1.2.3.4:9090/registry?check=false&file=N/A").addParameter(Constants.REGISTRY_RETRY_PERIOD_KEY, String.valueOf(FAILED_PERIOD));
     }
 
