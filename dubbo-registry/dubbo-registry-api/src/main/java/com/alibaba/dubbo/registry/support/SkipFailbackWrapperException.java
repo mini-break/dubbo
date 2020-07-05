@@ -17,6 +17,8 @@
 package com.alibaba.dubbo.registry.support;
 
 /**
+ * 该类是一个dubbo单独创建的异常，在FailbackRegistry中被使用到，自定义的是一个跳过失败重试的异常
+ *
  * Wrapper Exception, it is used to indicate that {@link FailbackRegistry} skips Failback.
  * <p>
  * NOTE: Expect to find other more conventional ways of instruction.

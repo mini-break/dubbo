@@ -367,7 +367,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                         try {
                             // 注册
                             doRegister(url);
-                            // 从注册失败的缓存中移除
+                            // 注册成功后从注册失败的缓存中移除
                             failedRegistered.remove(url);
                         } catch (Throwable t) { // Ignore all the exceptions and wait for the next retry
                             logger.warn("Failed to retry register " + failed + ", waiting for again, cause: " + t.getMessage(), t);

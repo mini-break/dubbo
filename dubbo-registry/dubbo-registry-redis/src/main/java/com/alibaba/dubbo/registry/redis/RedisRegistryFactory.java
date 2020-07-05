@@ -26,6 +26,10 @@ import com.alibaba.dubbo.registry.support.AbstractRegistryFactory;
  */
 public class RedisRegistryFactory extends AbstractRegistryFactory {
 
+    /**
+     * @param url 注册中心地址
+     * @return
+     */
     @Override
     protected Registry createRegistry(URL url) {
         return new RedisRegistry(url);

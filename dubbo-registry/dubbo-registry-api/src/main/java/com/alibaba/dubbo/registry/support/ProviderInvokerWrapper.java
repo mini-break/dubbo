@@ -23,13 +23,19 @@ import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
 
 /**
+ * 服务提供者的Invoker的包装器
  * @date 2017/11/23
  */
 public class ProviderInvokerWrapper<T> implements Invoker {
+    // Invoker对象
     private Invoker<T> invoker;
+    // 原始url
     private URL originUrl;
+    // 注册中心url
     private URL registryUrl;
+    // 服务提供者url
     private URL providerUrl;
+    // 是否注册
     private volatile boolean isReg;
 
     public ProviderInvokerWrapper(Invoker<T> invoker,URL registryUrl,URL providerUrl) {

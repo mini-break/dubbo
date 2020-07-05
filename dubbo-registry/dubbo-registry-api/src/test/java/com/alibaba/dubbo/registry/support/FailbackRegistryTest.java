@@ -33,12 +33,33 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.Assert.assertEquals;
 
 public class FailbackRegistryTest {
+    /**
+     * 服务接口
+     */
     static String service;
+    /**
+     * 服务地址
+     */
     static URL serviceUrl;
+    /**
+     * 注册地址
+     */
     static URL registryUrl;
+    /**
+     * 注册中心
+     */
     MockRegistry registry;
+    /**
+     * 失败重试间隔周期
+     */
     private int FAILED_PERIOD = 200;
+    /**
+     * 休眠时间
+     */
     private int sleeptime = 100;
+    /**
+     * 重连次数
+     */
     private int trytimes = 5;
 
     /**
