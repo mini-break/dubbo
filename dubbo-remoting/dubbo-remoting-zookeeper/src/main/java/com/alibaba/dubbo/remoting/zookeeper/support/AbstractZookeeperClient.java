@@ -30,32 +30,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-/**
- * 该类实现了ZookeeperClient接口，是客户端的抽象类，它实现了一些公共逻辑，把具体的doClose、createPersistent等方法抽象出来，留给子类来实现
- */
 public abstract class AbstractZookeeperClient<TargetChildListener> implements ZookeeperClient {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractZookeeperClient.class);
 
-    /**
-     * url对象
-     */
     private final URL url;
 
-    /**
-     * 状态监听器集合
-     */
     private final Set<StateListener> stateListeners = new CopyOnWriteArraySet<StateListener>();
 
-    /**
-     * 客户端监听器集合
-     */
     private final ConcurrentMap<String, ConcurrentMap<ChildListener, TargetChildListener>> childListeners = new ConcurrentHashMap<String, ConcurrentMap<ChildListener, TargetChildListener>>();
 
-    /**
-     * 是否关闭
-     */
     private volatile boolean closed = false;
+
+    private final Set<String>  persistentExistNodePath = new ConcurrentHashSet<String>();
 
     public AbstractZookeeperClient(URL url) {
         this.url = url;
@@ -66,73 +53,60 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         return url;
     }
 
-    /**
-     * 创建客户端
-     * @param path
-     * @param ephemeral
-     */
+
+    @Override
+    public void delete(String path){
+        //never mind if ephemeral
+        persistentExistNodePath.remove(path);
+        deletePath(path);
+    }
+
+
     @Override
     public void create(String path, boolean ephemeral) {
-        // 如果不是临时节点
         if (!ephemeral) {
-            // 判断该客户端是否存在
+            if(persistentExistNodePath.contains(path)){
+                return;
+            }
             if (checkExists(path)) {
+                persistentExistNodePath.add(path);
                 return;
             }
         }
-        // 获得/的位置
         int i = path.lastIndexOf('/');
         if (i > 0) {
-            // 创建客户端
             create(path.substring(0, i), false);
         }
-        // 如果是临时节点
         if (ephemeral) {
-            // 创建临时节点
             createEphemeral(path);
         } else {
-            // 递归创建节点
             createPersistent(path);
+            persistentExistNodePath.add(path);
+
         }
     }
 
-    /**
-     * 增加状态监听器
-     * @param listener
-     */
     @Override
     public void addStateListener(StateListener listener) {
-        // 状态监听器加入集合
         stateListeners.add(listener);
     }
 
     @Override
     public void removeStateListener(StateListener listener) {
-        // // 把状态监听器从集合移除
         stateListeners.remove(listener);
     }
 
     public Set<StateListener> getSessionListeners() {
-        // 返回监听器集合
         return stateListeners;
     }
 
-    /**
-     * 添加子节点监听器
-     * @param path
-     * @param listener
-     * @return
-     */
     @Override
     public List<String> addChildListener(String path, final ChildListener listener) {
-        // 获得子节点的监听器集合
         ConcurrentMap<ChildListener, TargetChildListener> listeners = childListeners.get(path);
-        // 如果为空，则创建一个，并且加入集合
         if (listeners == null) {
             childListeners.putIfAbsent(path, new ConcurrentHashMap<ChildListener, TargetChildListener>());
             listeners = childListeners.get(path);
         }
-
         TargetChildListener targetListener = listeners.get(listener);
         if (targetListener == null) {
             listeners.putIfAbsent(listener, createTargetChildListener(path, listener));
@@ -141,11 +115,6 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         return addTargetChildListener(path, targetListener);
     }
 
-    /**
-     * 移除子节点监听器
-     * @param path
-     * @param listener
-     */
     @Override
     public void removeChildListener(String path, ChildListener listener) {
         ConcurrentMap<ChildListener, TargetChildListener> listeners = childListeners.get(path);
@@ -157,19 +126,12 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         }
     }
 
-    /**
-     * 状态改变
-     * @param state
-     */
     protected void stateChanged(int state) {
         for (StateListener sessionListener : getSessionListeners()) {
             sessionListener.stateChanged(state);
         }
     }
 
-    /**
-     * 关闭客户端
-     */
     @Override
     public void close() {
         if (closed) {
@@ -177,57 +139,29 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         }
         closed = true;
         try {
-            // 关闭
             doClose();
         } catch (Throwable t) {
             logger.warn(t.getMessage(), t);
         }
     }
 
-    /**
-     * 关闭客户端
-     */
     protected abstract void doClose();
 
-    /**
-     * 递归创建节点
-     * @param path
-     */
     protected abstract void createPersistent(String path);
 
-    /**
-     * 创建临时节点
-     * @param path
-     */
     protected abstract void createEphemeral(String path);
 
-    /**
-     * 检测该节点是否存在
-     * @param path
-     * @return
-     */
     protected abstract boolean checkExists(String path);
 
-    /**
-     * 创建子节点监听器
-     * @param path
-     * @param listener
-     * @return
-     */
     protected abstract TargetChildListener createTargetChildListener(String path, ChildListener listener);
 
-    /**
-     * 为子节点添加监听器
-     * @param path
-     * @param listener
-     * @return
-     */
     protected abstract List<String> addTargetChildListener(String path, TargetChildListener listener);
 
-    /**
-     * 移除子节点监听器
-     * @param path
-     * @param listener
-     */
     protected abstract void removeTargetChildListener(String path, TargetChildListener listener);
+
+    /**
+     * we invoke the zookeeper client to delete the node
+     * @param path the node path
+     */
+    protected abstract void deletePath(String path);
 }
