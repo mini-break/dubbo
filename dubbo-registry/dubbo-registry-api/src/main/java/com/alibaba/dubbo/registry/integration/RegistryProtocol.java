@@ -140,7 +140,7 @@ public class RegistryProtocol implements Protocol {
 
         /**
          * 获取注册中心 URL，以 zookeeper 注册中心为例，得到的示例 URL 如下：
-         * zookeeper://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-provider&dubbo=2.0.2&export=dubbo%3A%2F%2F172.17.48.52%3A20880%2Fcom.alibaba.dubbo.demo.DemoService%3Fanyhost%3Dtrue%26application%3Ddemo-provider
+         * zookeeper://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-provider&dubbo=2.0.2&export=dubbo://172.17.48.52:20880/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider
          */
         URL registryUrl = getRegistryUrl(originInvoker);
 
@@ -234,10 +234,19 @@ public class RegistryProtocol implements Protocol {
         return registryFactory.getRegistry(registryUrl);
     }
 
+    /**
+     * 获取注册URL
+     *
+     * @param originInvoker
+     * @return
+     */
     private URL getRegistryUrl(Invoker<?> originInvoker) {
         URL registryUrl = originInvoker.getUrl();
+        // 注册URL的协议为 "registry"
         if (Constants.REGISTRY_PROTOCOL.equals(registryUrl.getProtocol())) {
+            // 获取参数"registry" 的值
             String protocol = registryUrl.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_DIRECTORY);
+            // 设置注册协议,并移除"registry"参数
             registryUrl = registryUrl.setProtocol(protocol).removeParameter(Constants.REGISTRY_KEY);
         }
         return registryUrl;

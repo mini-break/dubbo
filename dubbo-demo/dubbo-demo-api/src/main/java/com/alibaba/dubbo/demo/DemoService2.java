@@ -16,10 +16,8 @@
  */
 package com.alibaba.dubbo.demo;
 
-public interface DemoService {
+public interface DemoService2 {
 
-    String sayHello(String name);
-
-    String sayHi(String name);
+    String sayHello2(String name);
 
 }

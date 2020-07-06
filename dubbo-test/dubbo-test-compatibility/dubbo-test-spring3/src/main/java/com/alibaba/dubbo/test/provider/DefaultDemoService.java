@@ -37,4 +37,9 @@ public class DefaultDemoService implements DemoService {
         return "DefaultDemoService - sayHell() : " + name;
     }
 
+    @Override
+    public String sayHi(String name) {
+        return "DefaultDemoService - sayHi() : " + name;
+    }
+
 }

@@ -94,7 +94,9 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
     public Registry getRegistry(URL url) {
         // 修改url
         url = url.setPath(RegistryService.class.getName())
+                // 增加注册接口参数
                 .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())
+                // 删除导出参数
                 .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);
         // 计算key值
         String key = url.toServiceStringWithoutResolving();
