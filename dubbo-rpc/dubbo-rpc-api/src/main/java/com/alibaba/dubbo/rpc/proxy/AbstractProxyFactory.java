@@ -25,6 +25,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
 import com.alibaba.dubbo.rpc.service.GenericService;
 
 /**
+ * 该类是代理工厂的抽象类，主要处理了一下需要代理的接口，然后把代理getProxy方法抽象出来。
  * AbstractProxyFactory
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {

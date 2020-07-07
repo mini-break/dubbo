@@ -43,6 +43,7 @@ import java.util.List;
 public interface LoadBalance {
 
     /**
+     * 选择一个合适的调用，并且返回
      * select one invoker in list.
      *
      * @param invokers   invokers.

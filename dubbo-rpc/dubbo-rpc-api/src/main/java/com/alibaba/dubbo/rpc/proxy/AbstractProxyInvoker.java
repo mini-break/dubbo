@@ -26,14 +26,24 @@ import com.alibaba.dubbo.rpc.RpcResult;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * 该类实现了Invoker接口，是代理invoker对象的抽象类。
  * InvokerWrapper
  */
 public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
 
+    /**
+     * 代理对象
+     */
     private final T proxy;
 
+    /**
+     * 类型
+     */
     private final Class<T> type;
 
+    /**
+     * url对象
+     */
     private final URL url;
 
     public AbstractProxyInvoker(T proxy, Class<T> type, URL url) {
@@ -73,6 +83,7 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
         try {
+            // 调用了抽象方法doInvoke
             return new RpcResult(doInvoke(proxy, invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments()));
         } catch (InvocationTargetException e) {
             return new RpcResult(e.getTargetException());

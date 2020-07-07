@@ -24,6 +24,7 @@ import com.alibaba.dubbo.rpc.RpcException;
 import java.util.List;
 
 /**
+ * 该接口是目录接口，Directory 代表了多个 Invoker，并且它的值会随着注册中心的服务变更推送而变化 。一个服务类型对应一个Directory。
  * Directory. (SPI, Prototype, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Directory_service">Directory Service</a>
@@ -33,6 +34,7 @@ import java.util.List;
 public interface Directory<T> extends Node {
 
     /**
+     * 获得服务类型
      * get service type.
      *
      * @return service type.
@@ -40,6 +42,7 @@ public interface Directory<T> extends Node {
     Class<T> getInterface();
 
     /**
+     * 获得所有服务Invoker集合
      * list invokers.
      *
      * @return invokers

@@ -24,6 +24,7 @@ import com.alibaba.dubbo.rpc.RpcException;
 import java.util.List;
 
 /**
+ * 该接口是路由规则的接口，定义的两个方法，第一个方法是获得路由规则的url，第二个方法是筛选出跟规则匹配的Invoker集合。
  * Router. (SPI, Prototype, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Routing">Routing</a>
@@ -34,6 +35,7 @@ import java.util.List;
 public interface Router extends Comparable<Router>{
 
     /**
+     * 获得路由规则的url
      * get the router url.
      *
      * @return url
@@ -41,6 +43,7 @@ public interface Router extends Comparable<Router>{
     URL getUrl();
 
     /**
+     * 筛选出跟规则匹配的Invoker集合
      * route.
      *
      * @param invokers
