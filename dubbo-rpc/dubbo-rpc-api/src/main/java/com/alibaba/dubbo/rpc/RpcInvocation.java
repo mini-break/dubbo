@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 该类实现了Invocation接口，是rpc的会话域
  * RPC Invocation.
  *
  * @serial Don't change the class name and properties.
@@ -34,14 +35,29 @@ public class RpcInvocation implements Invocation, Serializable {
 
     private static final long serialVersionUID = -4355285085441097045L;
 
+    /**
+     * 方法名称
+     */
     private String methodName;
 
+    /**
+     * 参数类型集合
+     */
     private Class<?>[] parameterTypes;
 
+    /**
+     * 参数集合
+     */
     private Object[] arguments;
 
+    /**
+     * 附加值
+     */
     private Map<String, String> attachments;
 
+    /**
+     * 实体域
+     */
     private transient Invoker<?> invoker;
 
     public RpcInvocation() {

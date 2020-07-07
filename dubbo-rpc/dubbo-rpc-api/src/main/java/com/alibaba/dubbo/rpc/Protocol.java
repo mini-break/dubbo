@@ -39,6 +39,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface Protocol {
 
     /**
+     * 获得默认端口
      * Get default port when user doesn't config the port.
      *
      * @return default port

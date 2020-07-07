@@ -17,6 +17,7 @@
 package com.alibaba.dubbo.rpc.service;
 
 /**
+ * 该接口是通用的服务接口，同样定义了一个类似invoke的方法
  * Generic service interface
  *
  * @export

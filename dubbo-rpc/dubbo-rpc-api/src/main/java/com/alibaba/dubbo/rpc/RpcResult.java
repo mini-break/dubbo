@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 该类实现了Result接口，是rpc的结果实现类
  * RPC Result.
  *
  * @serial Don't change the class name and properties.
@@ -29,10 +30,19 @@ public class RpcResult implements Result, Serializable {
 
     private static final long serialVersionUID = -6925924956850004727L;
 
+    /**
+     * 结果
+     */
     private Object result;
 
+    /**
+     * 异常
+     */
     private Throwable exception;
 
+    /**
+     * 附加值
+     */
     private Map<String, String> attachments = new HashMap<String, String>();
 
     public RpcResult() {

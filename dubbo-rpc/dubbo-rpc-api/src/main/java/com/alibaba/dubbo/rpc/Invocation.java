@@ -84,7 +84,7 @@ public interface Invocation {
     String getAttachment(String key, String defaultValue);
 
     /**
-     * 获取当前的invoker
+     * 获取当前上下文的invoker
      * get the invoker in current context.
      *
      * @return invoker.

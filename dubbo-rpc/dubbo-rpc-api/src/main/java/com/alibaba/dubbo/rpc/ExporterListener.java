@@ -33,6 +33,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface ExporterListener {
 
     /**
+     * 暴露服务
      * The exporter exported.
      *
      * @param exporter
@@ -42,6 +43,7 @@ public interface ExporterListener {
     void exported(Exporter<?> exporter) throws RpcException;
 
     /**
+     * 取消暴露
      * The exporter unexported.
      *
      * @param exporter

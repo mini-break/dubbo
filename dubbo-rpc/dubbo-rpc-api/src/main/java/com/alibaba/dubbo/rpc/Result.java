@@ -19,6 +19,7 @@ package com.alibaba.dubbo.rpc;
 import java.util.Map;
 
 /**
+ * 该接口是实体域执行invoke的结果接口，里面定义了获得结果异常以及附加值等方法。
  * RPC invoke result. (API, Prototype, NonThreadSafe)
  *
  * @serial Don't change the class name and package name.
@@ -28,6 +29,7 @@ import java.util.Map;
 public interface Result {
 
     /**
+     * 获得实体域结果
      * Get invoke result.
      *
      * @return result. if no result return null.
@@ -35,6 +37,7 @@ public interface Result {
     Object getValue();
 
     /**
+     * 获得异常
      * Get exception.
      *
      * @return exception. if no exception return null.
@@ -42,6 +45,7 @@ public interface Result {
     Throwable getException();
 
     /**
+     * 判断是否是异常
      * Has exception.
      *
      * @return has exception.
@@ -49,6 +53,7 @@ public interface Result {
     boolean hasException();
 
     /**
+     * 重新获取结果
      * Recreate.
      * <p>
      * <code>
@@ -73,6 +78,7 @@ public interface Result {
 
 
     /**
+     * 获得附加值集合
      * get attachments.
      *
      * @return attachments.
@@ -80,6 +86,7 @@ public interface Result {
     Map<String, String> getAttachments();
 
     /**
+     * 获得附加值
      * get attachment by key.
      *
      * @return attachment value.
@@ -87,6 +94,7 @@ public interface Result {
     String getAttachment(String key);
 
     /**
+     * 获得附加值
      * get attachment by key with default value.
      *
      * @return attachment value.
