@@ -37,6 +37,12 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
     protected Boolean check;
 
     // whether to eagle-init
+    /**
+     * 服务引用被触发有两个时机：
+     * 1.Spring 容器调用 ReferenceBean 的 afterPropertiesSet 方法时引用服务（饿汉式）
+     * 2.在 ReferenceBean 对应的服务被注入到其他类中时引用（懒汉式）
+     * 默认情况下，Dubbo 使用懒汉式引用服务。如果需要使用饿汉式，可通过配置 <dubbo:reference>  的 init 属性开启。
+     */
     protected Boolean init;
 
     // whether to use generic interface

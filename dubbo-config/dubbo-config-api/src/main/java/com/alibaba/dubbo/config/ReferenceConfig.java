@@ -92,6 +92,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     // interface proxy reference
     private transient volatile T ref;
     private transient volatile Invoker<?> invoker;
+    /**
+     * 是否已初始化标识
+     */
     private transient volatile boolean initialized;
     private transient volatile boolean destroyed;
     @SuppressWarnings("unused")
@@ -197,6 +200,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (initialized) {
             return;
         }
+        // 标记为已初始化
         initialized = true;
         // 检测接口名合法性
         if (interfaceName == null || interfaceName.length() == 0) {

@@ -29,6 +29,7 @@
         <skip_maven_deploy>true</skip_maven_deploy>
     </properties>
     <dependencies>
+        <!--客户端需要强引用服务端api-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo-demo-api</artifactId>
