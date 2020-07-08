@@ -22,8 +22,9 @@ import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.cluster.Directory;
 
 /**
+ * Failover Cluster：失败自动切换，当调用出现失败的时候，会自动切换集群中其他服务器，
+ * 来获得invoker重试，通常用于读操作，但重试会带来更长延迟。一般都会设置重试次数。
  * {@link FailoverClusterInvoker}
- *
  */
 public class FailoverCluster implements Cluster {
 
@@ -31,6 +32,7 @@ public class FailoverCluster implements Cluster {
 
     @Override
     public <T> Invoker<T> join(Directory<T> directory) throws RpcException {
+        // 创建FailoverClusterInvoker
         return new FailoverClusterInvoker<T>(directory);
     }
 

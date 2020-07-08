@@ -22,8 +22,9 @@ import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.cluster.Directory;
 
 /**
+ * Failback Cluster：失败自动恢复，在调用失败后，返回一个空结果给服务提供者。
+ * 并通过定时任务对失败的调用记录并且重传，适合执行消息通知等操作。
  * {@link FailbackClusterInvoker}
- *
  */
 public class FailbackCluster implements Cluster {
 

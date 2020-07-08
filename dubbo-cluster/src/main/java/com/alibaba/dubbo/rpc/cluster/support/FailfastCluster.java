@@ -22,8 +22,8 @@ import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.cluster.Directory;
 
 /**
+ * Failfast Cluster：只会进行一次调用，失败后立即抛出异常。适用于幂等操作，比如新增记录。
  * {@link FailfastClusterInvoker}
- *
  */
 public class FailfastCluster implements Cluster {
 

@@ -27,8 +27,8 @@ import com.alibaba.dubbo.rpc.cluster.LoadBalance;
 import java.util.List;
 
 /**
+ * Available Cluster：调用第一个可用的服务器，仅仅应用于多注册中心。
  * AvailableCluster
- *
  */
 public class AvailableCluster implements Cluster {
 
