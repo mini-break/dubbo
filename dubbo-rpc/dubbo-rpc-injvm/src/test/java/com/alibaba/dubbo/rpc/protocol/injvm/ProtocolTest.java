@@ -44,6 +44,7 @@ public class ProtocolTest {
 
     @Test
     public void test_destroyWontCloseAllProtocol() throws Exception {
+        System.out.println("aaa");
         Protocol autowireProtocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
         Protocol InjvmProtocol = ExtensionLoader.getExtensionLoader(Protocol.class).getExtension("injvm");

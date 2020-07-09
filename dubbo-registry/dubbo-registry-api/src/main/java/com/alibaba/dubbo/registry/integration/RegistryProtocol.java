@@ -66,6 +66,9 @@ public class RegistryProtocol implements Protocol {
     //To solve the problem of RMI repeated exposure port conflicts, the services that have been exposed are no longer exposed.
     //providerurl <--> exporter
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>();
+    /**
+     * 集群扩展,默认用failover模式
+     */
     private Cluster cluster;
     /**
      * Protocol$Adaptive,会根据具体的protocol获取真实的Protocol实现类
@@ -102,6 +105,10 @@ public class RegistryProtocol implements Protocol {
         }
     }
 
+    /**
+     * 扩展Protocol时,对所有的set方法对应的属性进行注入
+     * @param cluster
+     */
     public void setCluster(Cluster cluster) {
         this.cluster = cluster;
     }
@@ -346,12 +353,14 @@ public class RegistryProtocol implements Protocol {
         directory.setProtocol(protocol);
         // all attributes of REFER_KEY
         Map<String, String> parameters = new HashMap<String, String>(directory.getUrl().getParameters());
-        // 生成服务消费者链接
+        // 生成服务订阅者链接
         URL subscribeUrl = new URL(Constants.CONSUMER_PROTOCOL, parameters.remove(Constants.REGISTER_IP_KEY), 0, type.getName(), parameters);
-        // 注册服务消费者，在 consumers 目录下新节点
+        // 注册服务订阅者，在 consumers 目录下新节点
         if (!Constants.ANY_VALUE.equals(url.getServiceInterface())
                 && url.getParameter(Constants.REGISTER_KEY, true)) {
+            // 组装服务消费者url
             URL registeredConsumerUrl = getRegisteredConsumerUrl(subscribeUrl, url);
+            // 向注册中心注册
             registry.register(registeredConsumerUrl);
             directory.setRegisteredConsumerUrl(registeredConsumerUrl);
         }
@@ -368,6 +377,7 @@ public class RegistryProtocol implements Protocol {
     }
 
     public URL getRegisteredConsumerUrl(final URL consumerUrl, URL registryUrl) {
+        // 增加参数 category=consumers,check=false
         return consumerUrl.addParameters(CATEGORY_KEY, CONSUMERS_CATEGORY,
                 CHECK_KEY, String.valueOf(false));
     }

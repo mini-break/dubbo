@@ -24,9 +24,21 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 消费者模型
+ */
 public class ConsumerModel {
+    /**
+     * 服务消费者引用服务配置元数据
+     */
     private ReferenceConfig metadata;
+    /**
+     * 代理对象
+     */
     private Object proxyObject;
+    /**
+     * 服务名
+     */
     private String serviceName;
 
     private final Map<Method, ConsumerMethodModel> methodModels = new IdentityHashMap<Method, ConsumerMethodModel>();

@@ -374,7 +374,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         //attributes are stored by system context.
         // 存储 attributes 到系统上下文中
         StaticContext.getSystemContext().putAll(attributes);
-        // 创建代理类
+        // 创建接口代理对象 主要就是这里，返回接口的代理类，包括负载均衡算法
         ref = createProxy(map);
         /**
          * 根据服务名，ReferenceConfig，代理类构建 ConsumerModel，
@@ -615,6 +615,10 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         return invoker;
     }
 
+    /**
+     * 获取唯一的服务名
+     * @return
+     */
     @Parameter(excluded = true)
     public String getUniqueServiceName() {
         StringBuilder buf = new StringBuilder();
