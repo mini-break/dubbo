@@ -640,6 +640,7 @@ public class ExtensionLoader<T> {
             injectExtension(instance);
             // 创建 Wrapper 扩展对象（自动包装）
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
+            // cache中是否存在wrapper类，如果存在，遍历，最后返回wrapper这个实例
             if (wrapperClasses != null && !wrapperClasses.isEmpty()) {
                 // 循环创建 Wrapper 实例
                 for (Class<?> wrapperClass : wrapperClasses) {
@@ -647,6 +648,11 @@ public class ExtensionLoader<T> {
                      * Constructor 匹配无参构造函数，getConstructor(Class<?>... parameterTypes) 匹配和参数配型相符的构造函数
                      * 将当前 instance 作为参数传给 Wrapper 的构造方法，并通过反射创建 Wrapper 实例。
                      * 然后向 Wrapper 实例中注入依赖，最后将 Wrapper 实例再次赋值给 instance 变量
+                     *
+                     * 通过含参的构造方法将SPI实例（根据指定名字创建好的）注入进去
+                     * 注入成功并创建好实例之后会把这个组装好的Wrapper实例返回
+                     * 这样循环到下一个Wrapper类时其实注入的是上一个Wrapper类实例
+                     * 这也解释了为什么后定义的先执行
                      */
                     instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
                 }
@@ -659,6 +665,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
+     * injectExtension 只有一个逻辑，就是判断是否有set方法，然后属性注入
      * 向创建的拓展注入其依赖的属性
      * @param instance
      * @return
@@ -878,7 +885,10 @@ public class ExtensionLoader<T> {
                 cachedWrapperClasses = new ConcurrentHashSet<Class<?>>();
                 wrappers = cachedWrapperClasses;
             }
-            // 存储 clazz 到 cachedWrapperClasses 缓存中
+            /**
+             * 存储 clazz 到 cachedWrapperClasses 缓存中
+             * 这里cachedWrapperClasses和wrappers用的是同一个对象地址，所以相当于往cachedWrapperClasses添加元素
+             */
             wrappers.add(clazz);
         // 程序进入此分支，表明 clazz 是一个普通的拓展类
         } else {

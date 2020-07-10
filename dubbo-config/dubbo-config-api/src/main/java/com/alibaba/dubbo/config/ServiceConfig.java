@@ -673,7 +673,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             // 生成本地的url,分别把协议改为injvm，设置host和port
             URL local = URL.valueOf(url.toFullString())
-                    .setProtocol(Constants.LOCAL_PROTOCOL) // 设置协议头为 injvm
+                    .setProtocol(Constants.LOCAL_PROTOCOL) // 设置协议头为 injvm,在执行wrapper链时用到
                     .setHost(LOCALHOST)
                     .setPort(0);
             StaticContext.getContext(Constants.SERVICE_IMPL_CLASS).put(url.getServiceKey(), getServiceClass(ref));
