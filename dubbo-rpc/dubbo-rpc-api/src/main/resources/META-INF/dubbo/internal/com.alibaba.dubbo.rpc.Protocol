@@ -1,3 +1,3 @@
 filter=com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper
 listener=com.alibaba.dubbo.rpc.protocol.ProtocolListenerWrapper
-mock=com.alibaba.dubbo.rpc.support.MockProtocol
+mock=com.alibaba.dubbo.rpc.support.MockProtocol # 没有以Protocol为参数的构造函数，所以不会生成包装类

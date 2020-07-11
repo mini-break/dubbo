@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 抽象接口配置类
  * AbstractDefaultConfig
- *
  * @export
  */
 public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
@@ -53,9 +53,20 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     private static final long serialVersionUID = -1559314110797223229L;
 
     // local impl class name for the service interface
+    /**
+     * 服务接口客户端本地代理类名，用于在客户端执行本地逻辑，如本地缓存等。
+     * 该本地代理类的构造函数必须允许传入远程代理对象，构造函数如：public XxxServiceLocal(XxxService xxxService)
+     * 设为 true，表示使用缺省代理类名，即：接口名 + Local 后缀
+     */
     protected String local;
 
     // local stub class name for the service interface
+    /**
+     * 服务接口客户端本地代理类名，用于在客户端执行本地逻辑，如本地缓存等。
+     * 该本地代理类的构造函数必须允许传入远程代理对象，构造函数如：public XxxServiceStub(XxxService xxxService)
+     * 设为 true，表示使用缺省代理类名，即：接口名 + Stub 后缀
+     * 参见dubbo文档 http://dubbo.apache.org/zh-cn/docs/user/demos/local-stub.html
+     */
     protected String stub;
 
     // service monitor

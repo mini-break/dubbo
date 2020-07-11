@@ -92,6 +92,10 @@ public abstract class AbstractServiceConfig extends AbstractInterfaceConfig {
      * 设为true，将向logger中输出访问日志，也可填写访问日志文件路径，直接把访问日志输出到指定文件
      */
     protected String accesslog;
+    /**
+     * 配置的协议，可以有多个
+     * <dubbo:protocol name="dubbo" port="20880"/>
+     */
     protected List<ProtocolConfig> protocols;
     // max allowed execute times
     /**

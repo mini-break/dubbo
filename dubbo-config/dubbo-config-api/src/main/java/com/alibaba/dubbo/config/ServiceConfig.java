@@ -392,9 +392,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private void checkRef() {
         // reference should not be null, and is the implementation of the given interface
+        // 检查<dubbo:service>标签中ref属性
         if (ref == null) {
             throw new IllegalStateException("ref not allow null!");
         }
+        // ref需要为接口的实现类
         if (!interfaceClass.isInstance(ref)) {
             throw new IllegalStateException("The class "
                     + ref.getClass().getName() + " unimplemented interface "
@@ -887,6 +889,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             setProtocol(new ProtocolConfig());
         }
         for (ProtocolConfig protocolConfig : protocols) {
+            // <dubbo:protocol name="dubbo" port="20880"/>中如果没有配置name，则默认为dubbo
             if (StringUtils.isEmpty(protocolConfig.getName())) {
                 protocolConfig.setName(Constants.DUBBO_VERSION_KEY);
             }

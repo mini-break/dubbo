@@ -29,6 +29,7 @@ public class Protocol$Adaptive implements com.alibaba.dubbo.rpc.Protocol {
         String extName = (url.getProtocol() == null ? "dubbo" : url.getProtocol());
         if (extName == null)
             throw new IllegalStateException("Fail to get extension(com.alibaba.dubbo.rpc.Protocol) name from url(" + url.toString() + ") use keys([protocol])");
+        // 根据协议获取扩展类，如果是registry，则得到的扩展类是ProtocolListenerWrapper(本身是RegistryProtocol，但是会被ProtocolFilterWrapper、ProtocolListenerWrapper包装，最后返回的是ProtocolListenerWrapper)
         com.alibaba.dubbo.rpc.Protocol extension = (com.alibaba.dubbo.rpc.Protocol) ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.rpc.Protocol.class).getExtension(extName);
         return extension.export(arg0);
     }
