@@ -157,6 +157,12 @@ public class ExtensionLoader<T> {
         return type.isAnnotationPresent(SPI.class);
     }
 
+    /**
+     * 根据接口类型获取扩展加载器
+     * @param type
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         // 扩展点接口为空，抛出异常
@@ -245,7 +251,7 @@ public class ExtensionLoader<T> {
      */
     public List<T> getActivateExtension(URL url, String key, String group) {
         String value = url.getParameter(key);
-        // 获得符合自动激活条件的拓展对象数组
+        // 获得符合自动激活条件的扩展对象数组
         return getActivateExtension(url, value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value), group);
     }
 
@@ -404,7 +410,7 @@ public class ExtensionLoader<T> {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
         if ("true".equals(name)) {
-            // 获取默认的拓展实现类,也就是@SPI中的默认值作为key
+            // 获取默认的扩展实现类,也就是@SPI中的默认值作为key
             return getDefaultExtension();
         }
         // Holder，顾名思义，用于持有目标对象
@@ -430,7 +436,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * 查找默认的扩展实现
+     * 获取默认的扩展实现
      * Return default extension, return <code>null</code> if it's not configured.
      */
     public T getDefaultExtension() {
@@ -565,7 +571,7 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
-        // 从缓存中获取自适应拓展
+        // 从缓存中获取自适应扩展
         Object instance = cachedAdaptiveInstance.get();
         // 缓存未命中
         if (instance == null) {
@@ -574,9 +580,9 @@ public class ExtensionLoader<T> {
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) {
                         try {
-                            // 创建自适应拓展
+                            // 创建自适应扩展
                             instance = createAdaptiveExtension();
-                            // 设置自适应拓展到缓存中
+                            // 设置自适应扩展到缓存中
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {
                             createAdaptiveInstanceError = t;
@@ -624,7 +630,7 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     private T createExtension(String name) {
-        // 从配置文件中加载所有的拓展类，可得到“配置项名称”到“配置类”的映射关系表
+        // 从配置文件中加载所有的扩展类，可得到“配置项名称”到“配置类”的映射关系表
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw findException(name);
@@ -666,7 +672,7 @@ public class ExtensionLoader<T> {
 
     /**
      * injectExtension 只有一个逻辑，就是判断是否有set方法，然后属性注入
-     * 向创建的拓展注入其依赖的属性
+     * 向创建的扩展注入其依赖的属性
      * @param instance
      * @return
      */
@@ -747,7 +753,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * 从配置文件中，加载拓展实现类Map
+     * 从配置文件中，加载扩展实现类Map
      * @return
      */
     // synchronized in getExtensionClasses
@@ -764,7 +770,7 @@ public class ExtensionLoader<T> {
                     throw new IllegalStateException("more than 1 default extension name on extension " + type.getName()
                             + ": " + Arrays.toString(names));
                 }
-                // 设置默认名称，参考 getDefaultExtension 方法
+                // 缓存默认名称
                 if (names.length == 1) cachedDefaultName = names[0];
             }
         }
@@ -778,7 +784,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * 从一个配置文件中，加载拓展实现类
+     * 从一个配置文件中，加载扩展实现类
      * @param extensionClasses
      * @param dir
      */
@@ -868,7 +874,7 @@ public class ExtensionLoader<T> {
                     type + ", class line: " + clazz.getName() + "), class "
                     + clazz.getName() + "is not subtype of interface.");
         }
-        // 检测目标类上是否有 Adaptive 注解
+        // 检测目标类上是否有 @Adaptive 注解
         if (clazz.isAnnotationPresent(Adaptive.class)) {
             if (cachedAdaptiveClass == null) {
                 // 设置 cachedAdaptiveClass缓存
@@ -890,7 +896,7 @@ public class ExtensionLoader<T> {
              * 这里cachedWrapperClasses和wrappers用的是同一个对象地址，所以相当于往cachedWrapperClasses添加元素
              */
             wrappers.add(clazz);
-        // 程序进入此分支，表明 clazz 是一个普通的拓展类
+        // 程序进入此分支，表明 clazz 是一个普通的扩展类
         } else {
             // 检测 clazz 是否有默认的构造方法，如果没有，则抛出异常
             clazz.getConstructor();
@@ -912,6 +918,7 @@ public class ExtensionLoader<T> {
                      */
                     cachedActivates.put(names[0], activate);
                 }
+                // 遍历名称
                 for (String n : names) {
                     if (!cachedNames.containsKey(clazz)) {
                         // 存储 Class 到名称的映射关系
@@ -940,6 +947,7 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("deprecation")
     private String findAnnotationName(Class<?> clazz) {
+        // 获取@Extension注解
         com.alibaba.dubbo.common.Extension extension = clazz.getAnnotation(com.alibaba.dubbo.common.Extension.class);
         if (extension == null) {
             String name = clazz.getSimpleName();
@@ -959,9 +967,9 @@ public class ExtensionLoader<T> {
     private T createAdaptiveExtension() {
         try {
             /**
-             * 1.调用 getAdaptiveExtensionClass 方法获取自适应拓展 Class 对象
+             * 1.调用 getAdaptiveExtensionClass 方法获取自适应扩展 Class 对象
              * 2.通过反射进行实例化
-             * 3.调用 injectExtension 方法向拓展实例中注入依赖
+             * 3.调用 injectExtension 方法向扩展实例中注入依赖
              */
             return injectExtension((T) getAdaptiveExtensionClass().newInstance());
         } catch (Exception e) {
@@ -970,13 +978,13 @@ public class ExtensionLoader<T> {
     }
 
     private Class<?> getAdaptiveExtensionClass() {
-        // 通过 SPI 获取所有的拓展类
+        // 通过 SPI 获取所有的扩展类
         getExtensionClasses();
         // 检查缓存，若缓存不为空，则直接返回缓存
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
         }
-        // 创建自适应拓展类
+        // 创建自适应扩展类
         return cachedAdaptiveClass = createAdaptiveExtensionClass();
     }
 
@@ -985,7 +993,7 @@ public class ExtensionLoader<T> {
      * @return
      */
     private Class<?> createAdaptiveExtensionClass() {
-        // 构建自适应拓展代码
+        // 构建自适应扩展代码
         String code = createAdaptiveExtensionClassCode();
         ClassLoader classLoader = findClassLoader();
         // 获取编译器实现类

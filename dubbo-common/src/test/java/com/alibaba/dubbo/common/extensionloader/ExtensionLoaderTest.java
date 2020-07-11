@@ -67,7 +67,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
+/**
+ * 扩展加载器测试用例
+ */
 public class ExtensionLoaderTest {
+
+    /**
+     * 扩展接口不能为空
+     * @throws Exception
+     */
     @Test
     public void test_getExtensionLoader_Null() throws Exception {
         try {
@@ -79,6 +87,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 扩展类需要为接口
+     * @throws Exception
+     */
     @Test
     public void test_getExtensionLoader_NotInterface() throws Exception {
         try {
@@ -90,6 +102,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 扩展接口需要使用@SPI注解
+     * @throws Exception
+     */
     @Test
     public void test_getExtensionLoader_NotSpiAnnotation() throws Exception {
         try {
@@ -105,6 +121,7 @@ public class ExtensionLoaderTest {
 
     @Test
     public void test_getDefaultExtension() throws Exception {
+        // 获取SimpleExt接口的默认扩展类
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getDefaultExtension();
         assertThat(ext, instanceOf(SimpleExtImpl1.class));
 
