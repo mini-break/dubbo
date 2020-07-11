@@ -321,7 +321,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            // 对 interfaceClass，以及 <dubbo:method> 标签中的必要字段进行检查
+            // 对 interfaceClass，以及 <dubbo:service>标签中的子标签<dubbo:method> 必要字段进行检查
             checkInterfaceAndMethods(interfaceClass, methods);
             // 对 ref 合法性进行检测
             checkRef();
