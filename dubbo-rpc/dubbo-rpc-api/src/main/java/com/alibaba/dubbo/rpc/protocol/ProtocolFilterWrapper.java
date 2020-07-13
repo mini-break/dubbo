@@ -66,7 +66,7 @@ public class ProtocolFilterWrapper implements Protocol {
                 final Filter filter = filters.get(i);
                 // 记录last的invoker
                 final Invoker<T> next = last;
-                // 新建last
+                // 典型的装饰器模式，将invoker用filter逐层进行包装
                 last = new Invoker<T>() {
 
                     @Override
@@ -85,7 +85,7 @@ public class ProtocolFilterWrapper implements Protocol {
                     }
 
                     /**
-                     * 关键在这里，调用下一个filter代表的invoker，把每一个过滤器串起来
+                     * 关键在这里，每个filter在执行invoke方法时，会触发其下级节点的invoke方法，最后一级节点即为最原始的服务
                      * @param invocation
                      * @return
                      * @throws RpcException

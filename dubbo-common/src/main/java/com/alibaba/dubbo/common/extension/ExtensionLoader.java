@@ -349,10 +349,12 @@ public class ExtensionLoader<T> {
      * @return
      */
     private boolean isActive(Activate activate, URL url) {
+        // 如果注解没有配置value属性，则一定是激活的
         String[] keys = activate.value();
         if (keys.length == 0) {
             return true;
         }
+        // 对配置了value属性的注解，如果服务的url属性中存在与value属性值相匹配的属性且该属性值不为空，则该注解也是激活的
         for (String key : keys) {
             // 遍历每个url中携带的配置信息
             for (Map.Entry<String, String> entry : url.getParameters().entrySet()) {
