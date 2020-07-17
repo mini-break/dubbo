@@ -119,16 +119,25 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 获取默认扩展
+     * @throws Exception
+     */
     @Test
     public void test_getDefaultExtension() throws Exception {
         // 获取SimpleExt接口的默认扩展类
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getDefaultExtension();
         assertThat(ext, instanceOf(SimpleExtImpl1.class));
 
+        // 获取默认扩展类的名称
         String name = ExtensionLoader.getExtensionLoader(SimpleExt.class).getDefaultExtensionName();
         assertEquals("impl1", name);
     }
 
+    /**
+     * 由于没有设置默认扩展,所以默认扩展及默认扩展名为null
+     * @throws Exception
+     */
     @Test
     public void test_getDefaultExtension_NULL() throws Exception {
         Ext2 ext = ExtensionLoader.getExtensionLoader(Ext2.class).getDefaultExtension();
@@ -138,17 +147,27 @@ public class ExtensionLoaderTest {
         assertNull(name);
     }
 
+    /**
+     * 根据扩展名获取扩展类
+     * @throws Exception
+     */
     @Test
     public void test_getExtension() throws Exception {
         assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl1") instanceof SimpleExtImpl1);
         assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl2") instanceof SimpleExtImpl2);
     }
 
+    /**
+     * 包装类测试，相当于Aop功能
+     * @throws Exception
+     */
     @Test
     public void test_getExtension_WithWrapper() throws Exception {
+        // Ext5Impl1被Ext5Wrapper1和Ext5Wrapper2包装
         WrappedExt impl1 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl1");
         assertThat(impl1, anyOf(instanceOf(Ext5Wrapper1.class), instanceOf(Ext5Wrapper2.class)));
 
+        // Ext5Impl2被Ext5Wrapper1和Ext5Wrapper2包装
         WrappedExt impl2 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl2");
         assertThat(impl2, anyOf(instanceOf(Ext5Wrapper1.class), instanceOf(Ext5Wrapper2.class)));
 
@@ -157,11 +176,16 @@ public class ExtensionLoaderTest {
         int echoCount1 = Ext5Wrapper1.echoCount.get();
         int echoCount2 = Ext5Wrapper2.echoCount.get();
 
-        assertEquals("Ext5Impl1-echo", impl1.echo(url, "ha"));
+        // echo先经过Ext5Wrapper2.echo 再经过 Ext5Wrapper1.echo 最后到Ext5Impl1.echo
+        assertEquals("Ext5Impl1-echo:Ext5Wrapper2:Ext5Wrapper1:ha", impl1.echo(url, "ha"));
         assertEquals(echoCount1 + 1, Ext5Wrapper1.echoCount.get());
         assertEquals(echoCount2 + 1, Ext5Wrapper2.echoCount.get());
     }
 
+    /**
+     * 根据扩展名获取扩展类，未找到则抛异常
+     * @throws Exception
+     */
     @Test
     public void test_getExtension_ExceptionNoExtension() throws Exception {
         try {
@@ -172,6 +196,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 根据扩展名无法找到扩展类，自然无法做包装
+     * @throws Exception
+     */
     @Test
     public void test_getExtension_ExceptionNoExtension_WrapperNotAffactName() throws Exception {
         try {
@@ -182,6 +210,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 根据扩展名查找扩展类，扩展名参数必传
+     * @throws Exception
+     */
     @Test
     public void test_getExtension_ExceptionNullArg() throws Exception {
         try {
@@ -192,6 +224,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 根据扩展名是否能查找到扩展类
+     * @throws Exception
+     */
     @Test
     public void test_hasExtension() throws Exception {
         assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).hasExtension("impl1"));
@@ -206,6 +242,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 根据扩展名是否能查找到对应的包装类
+     * @throws Exception
+     */
     @Test
     public void test_hasExtension_wrapperIsNotExt() throws Exception {
         assertTrue(ExtensionLoader.getExtensionLoader(WrappedExt.class).hasExtension("impl1"));
@@ -222,6 +262,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 获取所有扩展名
+     * @throws Exception
+     */
     @Test
     public void test_getSupportedExtensions() throws Exception {
         Set<String> exts = ExtensionLoader.getExtensionLoader(SimpleExt.class).getSupportedExtensions();
@@ -234,6 +278,10 @@ public class ExtensionLoaderTest {
         assertEquals(expected, exts);
     }
 
+    /**
+     * 获取所有扩展名,但不包括包装类
+     * @throws Exception
+     */
     @Test
     public void test_getSupportedExtensions_wrapperIsNotExt() throws Exception {
         Set<String> exts = ExtensionLoader.getExtensionLoader(WrappedExt.class).getSupportedExtensions();
@@ -245,6 +293,10 @@ public class ExtensionLoaderTest {
         assertEquals(expected, exts);
     }
 
+    /**
+     * 增加扩展类(addExtension)测试
+     * @throws Exception
+     */
     @Test
     public void test_AddExtension() throws Exception {
         try {
@@ -258,9 +310,14 @@ public class ExtensionLoaderTest {
         AddExt1 ext = ExtensionLoader.getExtensionLoader(AddExt1.class).getExtension("Manual1");
 
         assertThat(ext, instanceOf(AddExt1_ManualAdd1.class));
+        // 根据扩展类类型获取扩展名
         assertEquals("Manual1", ExtensionLoader.getExtensionLoader(AddExt1.class).getExtensionName(AddExt1_ManualAdd1.class));
     }
 
+    /**
+     * 加入的扩展为空实现
+     * @throws Exception
+     */
     @Test
     public void test_AddExtension_NoExtend() throws Exception {
 //        ExtensionLoader.getExtensionLoader(Ext9Empty.class).getSupportedExtensions();
@@ -271,6 +328,10 @@ public class ExtensionLoaderTest {
         assertEquals("ext9", ExtensionLoader.getExtensionLoader(Ext9Empty.class).getExtensionName(Ext9EmptyImpl.class));
     }
 
+    /**
+     * 不能加入同名扩展类
+     * @throws Exception
+     */
     @Test
     public void test_AddExtension_ExceptionWhenExistedExtension() throws Exception {
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl1");
@@ -283,6 +344,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 加入自适应扩展类
+     * @throws Exception
+     */
     @Test
     public void test_AddExtension_Adaptive() throws Exception {
         ExtensionLoader<AddExt2> loader = ExtensionLoader.getExtensionLoader(AddExt2.class);
@@ -292,6 +357,10 @@ public class ExtensionLoaderTest {
         assertTrue(adaptive instanceof AddExt2_ManualAdaptive);
     }
 
+    /**
+     * 已存在自适应扩展类，再加入就会报错
+     * @throws Exception
+     */
     @Test
     public void test_AddExtension_Adaptive_ExceptionWhenExistedAdaptive() throws Exception {
         ExtensionLoader<AddExt1> loader = ExtensionLoader.getExtensionLoader(AddExt1.class);
@@ -306,6 +375,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * replaceExtension方法已废弃
+     * @throws Exception
+     */
     @Test
     public void test_replaceExtension() throws Exception {
         try {
@@ -367,6 +440,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 扩展类在初始化时出错，不会放入缓存中
+     * @throws Exception
+     */
     @Test
     public void test_InitError() throws Exception {
         ExtensionLoader<InitErrorExt> loader = ExtensionLoader.getExtensionLoader(InitErrorExt.class);
@@ -374,6 +451,7 @@ public class ExtensionLoaderTest {
         loader.getExtension("ok");
 
         try {
+            // error对应的扩展类在初始化的时候出错了，所以getExtension时自然取不到
             loader.getExtension("error");
             fail();
         } catch (IllegalStateException expected) {
@@ -382,6 +460,10 @@ public class ExtensionLoaderTest {
         }
     }
 
+    /**
+     * 获得自动激活的扩展对象测试
+     * @throws Exception
+     */
     @Test
     public void testLoadActivateExtension() throws Exception {
         // test default
@@ -417,6 +499,10 @@ public class ExtensionLoaderTest {
         Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl2.class);
     }
 
+    /**
+     * 获取默认激活扩展类
+     * @throws Exception
+     */
     @Test
     public void testLoadDefaultActivateExtension() throws Exception {
         // test default
@@ -435,6 +521,9 @@ public class ExtensionLoaderTest {
         Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl1.class);
     }
 
+    /**
+     * 扩展类依赖注入测试
+     */
     @Test
     public void testInjectExtension() {
         // test default

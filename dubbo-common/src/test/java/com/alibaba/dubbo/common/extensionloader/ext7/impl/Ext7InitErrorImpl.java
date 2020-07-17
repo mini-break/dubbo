@@ -21,6 +21,7 @@ import com.alibaba.dubbo.common.extensionloader.ext7.InitErrorExt;
 
 public class Ext7InitErrorImpl implements InitErrorExt {
 
+    // 调用Class.forName(line, true, classLoader)实例化时直接报错
     static {
         if (true) {
             throw new RuntimeException("intended!");

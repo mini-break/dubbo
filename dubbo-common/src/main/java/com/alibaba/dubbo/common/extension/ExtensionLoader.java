@@ -121,7 +121,7 @@ public class ExtensionLoader<T> {
      */
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
     /**
-     * 自适应扩展类缓存
+     * 自适应扩展类缓存(这个类有两种情况1.使用了@Adaptive的类 2.通过Javassist生成的xxx$Adaptive类)
      */
     private volatile Class<?> cachedAdaptiveClass = null;
     /**
@@ -452,7 +452,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * 判断扩展名是否有扩展实现类
+     * 判断扩展名是否有对应的扩展实现类
      * @param name
      * @return
      */
@@ -467,12 +467,17 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 获取所有扩展名
+     * @return
+     */
     public Set<String> getSupportedExtensions() {
         Map<String, Class<?>> clazzes = getExtensionClasses();
         return Collections.unmodifiableSet(new TreeSet<String>(clazzes.keySet()));
     }
 
     /**
+     * 获取默认扩展类名
      * Return default extension name, return <code>null</code> if not configured.
      */
     public String getDefaultExtensionName() {
@@ -507,6 +512,7 @@ public class ExtensionLoader<T> {
             if (StringUtils.isBlank(name)) {
                 throw new IllegalStateException("Extension name is blank (Extension " + type + ")!");
             }
+            // 加入新扩展类时,对扩展名进行重名校验
             if (cachedClasses.get().containsKey(name)) {
                 throw new IllegalStateException("Extension name " +
                         name + " already existed(Extension " + type + ")!");
@@ -515,7 +521,7 @@ public class ExtensionLoader<T> {
             // 把扩展名和扩展接口的实现类放入缓存
             cachedNames.put(clazz, name);
             cachedClasses.get().put(name, clazz);
-        } else {
+        } else { // 加入的为自适应扩展类
             if (cachedAdaptiveClass != null) {
                 throw new IllegalStateException("Adaptive Extension already existed(Extension " + type + ")!");
             }
@@ -584,7 +590,7 @@ public class ExtensionLoader<T> {
                         try {
                             // 创建自适应扩展
                             instance = createAdaptiveExtension();
-                            // 设置自适应扩展到缓存中
+                            // 将创建的自适应扩展加入缓存中
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {
                             createAdaptiveInstanceError = t;
@@ -635,6 +641,7 @@ public class ExtensionLoader<T> {
         // 从配置文件中加载所有的扩展类，可得到“配置项名称”到“配置类”的映射关系表
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
+            // 根据扩展名未找到扩展类，直接抛异常
             throw findException(name);
         }
         try {
@@ -689,6 +696,7 @@ public class ExtensionLoader<T> {
                             && Modifier.isPublic(method.getModifiers())) {
                         /**
                          * Check {@link DisableInject} to see if we need auto injection for this property
+                         * 如果set方法上标注了@DisableInject,则不执行依赖注入
                          */
                         if (method.getAnnotation(DisableInject.class) != null) {
                             continue;
@@ -940,6 +948,7 @@ public class ExtensionLoader<T> {
 
     private boolean isWrapperClass(Class<?> clazz) {
         try {
+            // 存在扩展类类型的构造函数
             clazz.getConstructor(type);
             return true;
         } catch (NoSuchMethodException e) {
