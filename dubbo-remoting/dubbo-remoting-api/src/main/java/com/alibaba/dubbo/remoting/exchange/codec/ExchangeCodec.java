@@ -59,7 +59,7 @@ public class ExchangeCodec extends TelnetCodec {
      */
     protected static final short MAGIC = (short) 0xdabb;
     /**
-     * Magic High，也就是0-7位：11011010
+     * Magic High，0-7位：11011010
      */
     protected static final byte MAGIC_HIGH = Bytes.short2bytes(MAGIC)[0];
     /**
