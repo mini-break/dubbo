@@ -500,7 +500,11 @@ public class ExtensionLoaderTest {
     }
 
     /**
-     * 获取默认激活扩展类
+     * 根据group及key获取扩展类
+     * 获取规则如下：
+     * 1.先根据group去获取
+     * 2.再根据key去获取
+     * 3.如果有key=default,则将default之前的key放在列表前面
      * @throws Exception
      */
     @Test
@@ -510,8 +514,8 @@ public class ExtensionLoaderTest {
         List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
                 .getActivateExtension(url, "ext", "default_group");
         Assert.assertEquals(2, list.size());
-        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
-        Assert.assertTrue(list.get(1).getClass() == ActivateExt1Impl1.class);
+        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class); // order1
+        Assert.assertTrue(list.get(1).getClass() == ActivateExt1Impl1.class); // group=default_group
 
         url = URL.valueOf("test://localhost/test?ext=default,order1");
         list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
@@ -519,6 +523,38 @@ public class ExtensionLoaderTest {
         Assert.assertEquals(2, list.size());
         Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
         Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl1.class);
+
+        // mytest
+        url = URL.valueOf("test://localhost/test?ext=order1");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, "ext", "default_group");
+        Assert.assertEquals(2, list.size());
+        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl1.class);
+
+        url = URL.valueOf("test://localhost/test?ext=order1,order2,default");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, "ext", "default_group");
+        Assert.assertEquals(3, list.size());
+        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
+        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl2.class);
+        Assert.assertTrue(list.get(2).getClass() == ActivateExt1Impl1.class);
+
+        url = URL.valueOf("test://localhost/test?ext=order1,default,order2");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, "ext", "default_group");
+        Assert.assertEquals(3, list.size());
+        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
+        Assert.assertTrue(list.get(1).getClass() == ActivateExt1Impl1.class);
+        Assert.assertTrue(list.get(2).getClass() == OrderActivateExtImpl2.class);
+
+        url = URL.valueOf("test://localhost/test?ext=order1,order2");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, "ext", "default_group");
+        Assert.assertEquals(3, list.size());
+        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl1.class);
+        Assert.assertTrue(list.get(2).getClass() == OrderActivateExtImpl2.class);
     }
 
     /**

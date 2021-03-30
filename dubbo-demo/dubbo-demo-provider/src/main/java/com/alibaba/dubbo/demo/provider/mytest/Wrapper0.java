@@ -68,7 +68,7 @@ public class Wrapper0 extends com.alibaba.dubbo.common.bytecode.Wrapper {
     }
 
     /**
-     *  在调用接口时，就时调用的这个方法
+     *  在调用接口时，就是调用的这个方法
      @param o 接口实例
      @param n 方法名
      @param p 参数类型

@@ -87,16 +87,24 @@ public class NettyServer extends AbstractServer implements Server {
 
         // 创建 boss 和 worker 线程池
         bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
+        // iothreads  默认是cpu核心数+1  与 32 进行比较，取小的那个  也就是最大不超过32
         workerGroup = new NioEventLoopGroup(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
                 new DefaultThreadFactory("NettyServerWorker", true));
 
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
         channels = nettyServerHandler.getChannels();
 
+        /**
+         * ChannelOption.SO_REUSEADDR  这个参数表示允许重复使用本地地址和端口
+         * 比如，某个服务器进程占用了TCP的80端口进行监听，此时再次监听该端口就会返回错误，
+         * 使用该参数就可以解决问题，该参数允许共用该端口，这个在服务器程序中比较常使用。
+         * 比如某个进程非正常退出，该程序占用的端口可能要被占用一段时间才能允许其他进程使用，
+         * 而且程序死掉以后，内核需要一定的时间才能够释放此端口，不设置SO_REUSEADDR就无法正常使用该端口
+         */
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE) // channel类型为nio
+                .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE) // 表示允许重复使用本地地址和端口
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override

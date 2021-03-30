@@ -32,12 +32,12 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
 
     /**
-     * 代理对象
+     * 代理对象(接口实现类)
      */
     private final T proxy;
 
     /**
-     * 类型
+     * 类型(接口)
      */
     private final Class<T> type;
 
@@ -92,6 +92,7 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
         }
     }
 
+    // 子类实现
     protected abstract Object doInvoke(T proxy, String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Throwable;
 
     @Override

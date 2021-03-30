@@ -26,7 +26,7 @@ import java.util.List;
 public interface ZookeeperClient {
 
     /**
-     * 创建client
+     * 创建持久结点
      * @param path
      * @param ephemeral
      */

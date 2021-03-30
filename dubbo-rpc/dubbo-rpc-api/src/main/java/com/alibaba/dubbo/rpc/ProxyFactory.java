@@ -62,8 +62,8 @@ public interface ProxyFactory {
      * create invoker.
      *
      * @param <T>
-     * @param proxy 被代理对象
-     * @param type  类型
+     * @param proxy 被代理对象(接口实现)
+     * @param type  类型(接口)
      * @param url   dubbo统一资源
      * @return invoker
      */

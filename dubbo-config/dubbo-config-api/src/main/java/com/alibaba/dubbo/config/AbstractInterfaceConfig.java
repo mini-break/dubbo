@@ -166,6 +166,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
         appendProperties(application);
 
+        // dubbo.service.shutdown.wait 停机等待时间
         String wait = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);
         if (wait != null && wait.trim().length() > 0) {
             System.setProperty(Constants.SHUTDOWN_WAIT_KEY, wait.trim());
@@ -183,6 +184,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && !registries.isEmpty()) {
             for (RegistryConfig config : registries) {
+                // <dubbo:registry address="zookeeper://xxxx:8001?backup=xxxx:8002,xxxx:8003" />
                 String address = config.getAddress();
                 if (address == null || address.length() == 0) {
                     // 若 address 为空，则将其设为 0.0.0.0
@@ -239,6 +241,9 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registryList;
     }
 
+    /**
+     * 获取监控中心地址
+     */
     protected URL loadMonitor(URL registryURL) {
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");

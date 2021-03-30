@@ -64,6 +64,7 @@ import static com.alibaba.dubbo.common.utils.NetUtils.isInvalidPort;
 
 /**
  * 服务提供者暴露服务配置
+ * ServiceConfig可以说是每暴露一个接口就会有一个ServiceConfig对象
  * ServiceConfig
  *
  * @export
@@ -575,7 +576,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         // 添加 token 到 map 中
         if (!ConfigUtils.isEmpty(token)) {
             if (ConfigUtils.isDefault(token)) {
-                // 随机生成 token
+                // 随机生成 uuid作为token
                 map.put(Constants.TOKEN_KEY, UUID.randomUUID().toString());
             } else {
                 map.put(Constants.TOKEN_KEY, token);
@@ -593,10 +594,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             contextPath = provider.getContextpath();
         }
 
-        // 获取 host 和 port
+        // 获取服务提供者ip 和 端口
         String host = this.findConfigedHosts(protocolConfig, registryURLs, map);
         Integer port = this.findConfigedPorts(protocolConfig, name, map);
-        // 组装 URL
+        // 组装服务提供者 URL
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
         if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
@@ -625,10 +626,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 if (registryURLs != null && !registryURLs.isEmpty()) {
                     for (URL registryURL : registryURLs) {
                         url = url.addParameterIfAbsent(Constants.DYNAMIC_KEY, registryURL.getParameter(Constants.DYNAMIC_KEY));
-                        // 加载监视器链接
+                        // 加载监控中心url
                         URL monitorUrl = loadMonitor(registryURL);
                         if (monitorUrl != null) {
-                            // 将监视器链接作为参数添加到 url 中
+                            // 将监控中心作为参数添加到 url 中
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }
                         if (logger.isInfoEnabled()) {
@@ -642,8 +643,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         }
 
                         /**
-                         * 为服务提供类(ref)生成 Invoker
-                         * 并在注册URL上加入服务暴露地址
+                         * 为服务提供类(ref)生成 Invoker(AbstractProxyInvoker)
+                         * 并在注册URL上加入服务暴露地址export=xxx
                          */
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         // DelegateProviderMetaDataInvoker 用于持有 Invoker 和 ServiceConfig
@@ -651,7 +652,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
                         /**
                          * 导出服务，并生成 Exporter
-                         * 此时Invoker对象携带的URL信息中定义的是"registry"，则此处"protocol"加载的是RegistryProtocol对象。
+                         * 此时Invoker对象携带的URL信息中定义的protocol="registry"，则此处"protocol"加载的是RegistryProtocol对象。
                          * 也即调用RegistryProtocol的export方法处理Invoker
                          */
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
@@ -678,8 +679,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     .setProtocol(Constants.LOCAL_PROTOCOL) // 设置协议头为 injvm,在执行wrapper链时用到
                     .setHost(LOCALHOST)
                     .setPort(0);
+            // 往context中添加一个键值，key是接口的全类名，value是实现类的全类名
             StaticContext.getContext(Constants.SERVICE_IMPL_CLASS).put(url.getServiceKey(), getServiceClass(ref));
-            // 创建 Invoker，并导出服务，这里的 protocol 会在运行时调用 InjvmProtocol 的 export 方法
+            // 创建 Invoker(AbstractProxyInvoker)，并导出服务，这里的 protocol 会在运行时调用 InjvmProtocol 的 export 方法
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             // 把生成的暴露者加入集合
@@ -816,6 +818,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             if (provider != null && (portToBind == null || portToBind == 0)) {
                 portToBind = provider.getPort();
             }
+            // dubbo:protocol标签port属性、dubbo:provider标签的port属性
             final int defaultPort = ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(name).getDefaultPort();
             if (portToBind == null || portToBind == 0) {
                 portToBind = defaultPort;

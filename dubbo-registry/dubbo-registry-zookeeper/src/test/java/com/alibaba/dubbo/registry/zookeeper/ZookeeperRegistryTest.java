@@ -50,8 +50,11 @@ public class ZookeeperRegistryTest {
 
     @Before
     public void setUp() throws Exception {
+        // 获取一个ServerSocket端口
         int zkServerPort = NetUtils.getAvailablePort();
+        // zk服务
         this.zkServer = new TestingServer(zkServerPort, true);
+        // 注册地址
         this.registryUrl = URL.valueOf("zookeeper://localhost:" + zkServerPort);
 
         zookeeperRegistryFactory = new ZookeeperRegistryFactory();
@@ -64,20 +67,31 @@ public class ZookeeperRegistryTest {
         zkServer.stop();
     }
 
+    /**
+     * 测试默认端口
+     */
     @Test
     public void testDefaultPort() {
         Assert.assertEquals("10.20.153.10:2181", ZookeeperRegistry.appendDefaultPort("10.20.153.10:0"));
         Assert.assertEquals("10.20.153.10:2181", ZookeeperRegistry.appendDefaultPort("10.20.153.10"));
     }
 
+    /**
+     * 任意host(0.0.0.0)测试
+     */
     @Test(expected = IllegalStateException.class)
     public void testAnyHost() {
+        // protocol=multicast  host=0.0.0.0
         URL errorUrl = URL.valueOf("multicast://0.0.0.0/");
         new ZookeeperRegistryFactory().createRegistry(errorUrl);
     }
 
+    /**
+     * 注册测试
+     */
     @Test
     public void testRegister() {
+        // 已注册URL集合
         Set<URL> registered;
 
         for (int i = 0; i < 2; i++) {
@@ -90,6 +104,9 @@ public class ZookeeperRegistryTest {
         assertThat(registered.size(), is(1));
     }
 
+    /**
+     * 测试订阅
+     */
     @Test
     public void testSubscribe() {
         NotifyListener listener = mock(NotifyListener.class);

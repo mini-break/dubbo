@@ -76,6 +76,9 @@ public abstract class AbstractConfig implements Serializable {
         Runtime.getRuntime().addShutdownHook(DubboShutdownHook.getDubboShutdownHook());
     }
 
+    /**
+     * 唯一标识
+     */
     protected String id;
 
     private static String convertLegacyValue(String key, String value) {
@@ -104,7 +107,7 @@ public abstract class AbstractConfig implements Serializable {
             try {
                 String name = method.getName();
                 /**
-                 * 方法是 public 的 setting 方法
+                 * 方法是 public 的 set 方法
                  * 方法的唯一参数是基本数据类型
                  */
                 if (name.length() > 3 && name.startsWith("set") && Modifier.isPublic(method.getModifiers())

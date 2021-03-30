@@ -65,6 +65,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
         super(url);
+        // 任意host则报错
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
         }
@@ -156,9 +157,9 @@ public class ZookeeperRegistry extends FailbackRegistry {
     @Override
     protected void doSubscribe(final URL url, final NotifyListener listener) {
         try {
-            // 处理所有Service层发起的订阅，例如监控中心的订阅
+            // zookeeper全量订阅，例如监控中心的订阅
             if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
-                // 获得根目录
+                // 获得根目录 url中group参数值，如果没配则为默认值dubbo
                 String root = toRootPath();
                 // 获得url对应的监听器集合
                 ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);

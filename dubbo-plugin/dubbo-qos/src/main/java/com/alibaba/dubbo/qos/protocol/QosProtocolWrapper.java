@@ -55,7 +55,9 @@ public class QosProtocolWrapper implements Protocol {
 
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        // 判断protocol="registry"
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
+            // 启动Qos服务
             startQosServer(invoker.getUrl());
             return protocol.export(invoker);
         }

@@ -35,7 +35,13 @@ public class ClusterUtils {
         Map<String, String> map = new HashMap<String, String>();
         Map<String, String> remoteMap = remoteUrl.getParameters();
 
-
+        /**
+         * 1、首先移除只在服务提供者端生效的属性（线程池相关）：
+         * threadname、default.threadname、threadpool、default.threadpool、corethreads、
+         * default.corethreads、threads、default.threads、queues、default.queues、alive、
+         * default.alive、transporter、default.transporter，
+         * 服务提供者URL中的这些属性来源于dubbo:protocol、dubbo:provider
+         */
         if (remoteMap != null && remoteMap.size() > 0) {
             map.putAll(remoteMap);
 
@@ -62,10 +68,16 @@ public class ClusterUtils {
             map.remove(Constants.DEFAULT_KEY_PREFIX + Constants.TRANSPORTER_KEY);
         }
 
+        /**
+         * 2、用消费端配置属性覆盖服务端属性
+         */
         if (localMap != null && localMap.size() > 0) {
             map.putAll(localMap);
         }
         if (remoteMap != null && remoteMap.size() > 0) {
+            /**
+             * 3、如下属性以服务端优先：dubbo(dubbo信息)、version（版本）、group（服务组）、methods（服务方法）、timestamp（时间戳）
+             */
             // Use version passed from provider side
             String dubbo = remoteMap.get(Constants.DUBBO_VERSION_KEY);
             if (dubbo != null && dubbo.length() > 0) {
@@ -89,12 +101,20 @@ public class ClusterUtils {
                 map.put(Constants.REMOTE_TIMESTAMP_KEY, remoteMap.get(Constants.TIMESTAMP_KEY));
             }
             // Combine filters and listeners on Provider and Consumer
+            /**
+             * 4、合并服务端，消费端Filter,其配置属性（reference.filter），
+             * 返回结果为：provider#reference.filter,consumer#reference.filter
+             */
             String remoteFilter = remoteMap.get(Constants.REFERENCE_FILTER_KEY);
             String localFilter = localMap.get(Constants.REFERENCE_FILTER_KEY);
             if (remoteFilter != null && remoteFilter.length() > 0
                     && localFilter != null && localFilter.length() > 0) {
                 localMap.put(Constants.REFERENCE_FILTER_KEY, remoteFilter + "," + localFilter);
             }
+            /**
+             * 5、合并服务端，消费端Listener，其配置属性(invoker.listener)，
+             * 返回结果为：provider#invoker.listener，consumer#invoker.listener
+             */
             String remoteListener = remoteMap.get(Constants.INVOKER_LISTENER_KEY);
             String localListener = localMap.get(Constants.INVOKER_LISTENER_KEY);
             if (remoteListener != null && remoteListener.length() > 0

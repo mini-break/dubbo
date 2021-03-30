@@ -35,6 +35,10 @@ public class MockClusterWrapper implements Cluster {
 
     @Override
     public <T> Invoker<T> join(Directory<T> directory) throws RpcException {
+        /**
+         * 先执行FailoverCluster的join方法处理
+         * 然后将Directory和返回的Invoker封装成一个MockCluster
+         */
         return new MockClusterInvoker<T>(directory,
                 this.cluster.join(directory));
     }

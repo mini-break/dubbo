@@ -18,8 +18,8 @@ package com.alibaba.dubbo.demo;
 
 public interface DemoService {
 
-    String sayHello(String name);
+    String sayHello(String name) throws Throwable;
 
-    String sayHi(String name);
+    String sayHi(String name) throws Throwable;
 
 }

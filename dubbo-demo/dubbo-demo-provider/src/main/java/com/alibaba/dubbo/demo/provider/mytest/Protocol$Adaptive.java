@@ -2,6 +2,9 @@ package com.alibaba.dubbo.demo.provider.mytest;
 
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 
+/**
+ * Protocol的适配器类
+ */
 public class Protocol$Adaptive implements com.alibaba.dubbo.rpc.Protocol {
     public void destroy() {
         throw new UnsupportedOperationException("method public abstract void com.alibaba.dubbo.rpc.Protocol.destroy() of interface com.alibaba.dubbo.rpc.Protocol is not adaptive method!");

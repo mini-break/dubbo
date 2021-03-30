@@ -117,6 +117,7 @@ public class RegistryProtocol implements Protocol {
         this.protocol = protocol;
     }
 
+    // 通过set注入进来
     public void setRegistryFactory(RegistryFactory registryFactory) {
         this.registryFactory = registryFactory;
     }
@@ -135,13 +136,18 @@ public class RegistryProtocol implements Protocol {
     }
 
     public void register(URL registryUrl, URL registedProviderUrl) {
+        /**
+         * 如：
+         * registryUrl=zookeeper://xxxx:8001/com.alibaba.dubbo.registry.RegistryService?application=demo-provider&backup=47.112.118.204:8002,47.112.118.204:8003&dubbo=2.0.2&export=dubbo%3A%2F%2F192.168.8.169%3A20880%2Fcom.alibaba.dubbo.demo.DemoService%3Fanyhost%3Dtrue%26application%3Ddemo-provider%26bean.name%3Dcom.alibaba.dubbo.demo.DemoService%26bind.ip%3D192.168.8.169%26bind.port%3D20880%26dubbo%3D2.0.2%26generic%3Dfalse%26interface%3Dcom.alibaba.dubbo.demo.DemoService%26methods%3DsayHello%2CsayHi%26pid%3D7228%26qos.port%3D22222%26side%3Dprovider%26timestamp%3D1616142714573&pid=7228&qos.port=22222&timestamp=1616142713396
+         * 则 registryFactory 为 ZookeeperRegistryFactory
+          */
         Registry registry = registryFactory.getRegistry(registryUrl);
         registry.register(registedProviderUrl);
     }
 
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
-        // 导出服务(先进行本地暴露)
+        // 服务暴露  本地启动服务不包括去注册中心注册
         //export invoker
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
 
@@ -152,10 +158,10 @@ public class RegistryProtocol implements Protocol {
         URL registryUrl = getRegistryUrl(originInvoker);
 
         //registry provider
-        // 根据 URL 加载 Registry 实现类，比如 ZookeeperRegistry
+        // 根据 URL 加载 Registry 实现类(注册中心对象)，比如 ZookeeperRegistry
         final Registry registry = getRegistry(originInvoker);
         /**
-         * 获取已注册的服务提供者 URL，比如：
+         * 获取服务提供者 URL，比如：
          * dubbo://172.17.48.52:20880/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.2&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello
          */
         final URL registeredProviderUrl = getRegisteredProviderUrl(originInvoker);
@@ -164,7 +170,7 @@ public class RegistryProtocol implements Protocol {
         // 获取 register 参数
         boolean register = registeredProviderUrl.getParameter("register", true);
 
-        // 向服务提供者与消费者注册表中注册服务提供者 ???
+        // 向本地服务注册表注册服务
         ProviderConsumerRegTable.registerProvider(originInvoker, registryUrl, registeredProviderUrl);
 
         // 根据 register 的值决定是否注册服务
@@ -196,13 +202,14 @@ public class RegistryProtocol implements Protocol {
         String key = getCacheKey(originInvoker);
         // 访问缓存
         ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
+        // 说明之前没有暴露过
         if (exporter == null) {
             synchronized (bounds) {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
                 if (exporter == null) {
                     // 创建 Invoker 为委托类对象
                     final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
-                    // 调用 protocol 的 export 方法导出服务
+                    // 调用 protocol(为DubboProtocol) 的 export 方法导出服务
                     exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker);
                     // 写缓存
                     bounds.put(key, exporter);
@@ -304,7 +311,7 @@ public class RegistryProtocol implements Protocol {
 
     /**
      * Get the key cached in bounds by invoker
-     *
+     * 首先获取一个cacheKey，这个cacheKey其实就是我们在服务暴露之前塞进去的一个export属性值（这里是把dynamic，enabled这两个属性移除掉了）
      * @param originInvoker
      * @return
      */
@@ -346,7 +353,10 @@ public class RegistryProtocol implements Protocol {
     }
 
     private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
-        // 创建 RegistryDirectory 实例
+        /**
+         * Directory中是Invoker的集合，相当于一个List也就是说这里面存放了多个Invoker，那么我们该调用哪一个呢？
+         * 该调用哪一个Invoker的工作就是Cluster来处理的
+         */
         RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
         // 设置注册中心和协议
         directory.setRegistry(registry);
@@ -370,7 +380,10 @@ public class RegistryProtocol implements Protocol {
                         + "," + Constants.CONFIGURATORS_CATEGORY
                         + "," + Constants.ROUTERS_CATEGORY));
 
-        // 一个注册中心可能有多个服务提供者，因此这里需要将多个服务提供者合并为一个
+        /**
+         * 服务的引用和变更全部由Directory异步完成,Directory中可能存在多个Invoker,
+         * 而Cluster会把多个Invoker伪装成一个Invoker,这一步就是做这个事情的
+         */
         Invoker invoker = cluster.join(directory);
         ProviderConsumerRegTable.registerConsumer(invoker, url, subscribeUrl, directory);
         return invoker;

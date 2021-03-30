@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 该类实现了ExchangeServer接口，是基于协议头的信息交换服务器实现类，HeaderExchangeServer是Server的装饰器，每个实现方法都会调用server的方法
+ * 主要维护心跳
  *
  * ExchangeServerImpl
  */
@@ -82,6 +83,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         if (server == null) {
             throw new IllegalArgumentException("server == null");
         }
+        // 服务器
         this.server = server;
         // 获得心跳周期配置，如果没有配置，默认设置为0
         this.heartbeat = server.getUrl().getParameter(Constants.HEARTBEAT_KEY, 0);
@@ -91,7 +93,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         if (heartbeatTimeout < heartbeat * 2) {
             throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
         }
-        // 开始心跳
+        // 启动心跳
         startHeartbeatTimer();
     }
 

@@ -143,6 +143,7 @@ public class ExtensionLoader<T> {
 
     private ExtensionLoader(Class<?> type) {
         this.type = type;
+        // ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension() 返回的为 AdaptiveExtensionFactory
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
@@ -256,7 +257,11 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * 获得自动激活的扩展对象
+     * 根据key及group获得自动激活的扩展对象
+     * 获取规则如下：
+     * 1.先根据group去获取
+     * 2.再根据key去获取
+     * 3.如果有key=default,则将default之前的key放在列表前面
      * Get activate extensions.
      *
      * @param url    url
@@ -768,7 +773,7 @@ public class ExtensionLoader<T> {
      */
     // synchronized in getExtensionClasses
     private Map<String, Class<?>> loadExtensionClasses() {
-        // 获取 SPI 注解，这里的 type 变量是在调用 getExtensionLoader 方法时传入的
+        // 获取 SPI 注解，这里的 type 变量是在调用 getExtensionLoader(Class<T> type) 方法时传入的
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);
         if (defaultAnnotation != null) {
             String value = defaultAnnotation.value();
@@ -780,7 +785,7 @@ public class ExtensionLoader<T> {
                     throw new IllegalStateException("more than 1 default extension name on extension " + type.getName()
                             + ": " + Arrays.toString(names));
                 }
-                // 缓存默认名称
+                // 缓存SPI注解默认名称
                 if (names.length == 1) cachedDefaultName = names[0];
             }
         }
@@ -884,7 +889,7 @@ public class ExtensionLoader<T> {
                     type + ", class line: " + clazz.getName() + "), class "
                     + clazz.getName() + "is not subtype of interface.");
         }
-        // 检测目标类上是否有 @Adaptive 注解
+        // 检测目标类上是否有 @Adaptive 注解 例：AdaptiveExtensionFactory
         if (clazz.isAnnotationPresent(Adaptive.class)) {
             if (cachedAdaptiveClass == null) {
                 // 设置 cachedAdaptiveClass缓存
@@ -1001,13 +1006,14 @@ public class ExtensionLoader<T> {
 
     /**
      * 创建适配器类，类似于dubbo动态生成的Transporter$Adpative这样的类
+     * 在生成适配器类时，若接口中没有声明带@Adaptive注解的方法，则不生成适配器类，若有，则在生成适配器类时，对带注解的方法重写
      * @return
      */
     private Class<?> createAdaptiveExtensionClass() {
         // 构建自适应扩展代码
         String code = createAdaptiveExtensionClassCode();
         ClassLoader classLoader = findClassLoader();
-        // 获取编译器实现类
+        // 获取编译器自适应类(AdaptiveCompile)
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
         // 编译代码，生成 Class
         return compiler.compile(code, classLoader);
@@ -1043,6 +1049,7 @@ public class ExtensionLoader<T> {
 
         for (Method method : methods) {
             Class<?> rt = method.getReturnType();
+            // 参数类型
             Class<?>[] pts = method.getParameterTypes();
             Class<?>[] ets = method.getExceptionTypes();
 
@@ -1122,9 +1129,11 @@ public class ExtensionLoader<T> {
                     code.append(s);
                 }
 
+                // 方法上 @Adaptive 注解的值
                 String[] value = adaptiveAnnotation.value();
                 // value is not set, use the value generated from class name as the key
                 if (value.length == 0) {
+                    // 如果方法上 @Adaptive 注解的值未设置，则以类名作为其值(例：Protocol中的export方法)
                     char[] charArray = type.getSimpleName().toCharArray();
                     StringBuilder sb = new StringBuilder(128);
                     for (int i = 0; i < charArray.length; i++) {

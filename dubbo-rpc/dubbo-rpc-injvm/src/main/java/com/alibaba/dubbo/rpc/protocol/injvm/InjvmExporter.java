@@ -27,6 +27,9 @@ import java.util.Map;
  */
 class InjvmExporter<T> extends AbstractExporter<T> {
 
+    /**
+     * 一个服务的标识
+     */
     private final String key;
 
     private final Map<String, Exporter<?>> exporterMap;
@@ -35,6 +38,7 @@ class InjvmExporter<T> extends AbstractExporter<T> {
         super(invoker);
         this.key = key;
         this.exporterMap = exporterMap;
+        // 将key=接口全限定类名，value=this（也就是InjvmExporter对象）put到exporterMap中
         exporterMap.put(key, this);
     }
 

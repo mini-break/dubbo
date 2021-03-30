@@ -1021,6 +1021,11 @@ public final class URL implements Serializable {
         return new URL(protocol, username, password, host, port, path, map);
     }
 
+    /**
+     * 添加成对的参数
+     * @param pairs
+     * @return
+     */
     public URL addParameters(String... pairs) {
         if (pairs == null || pairs.length == 0) {
             return this;
@@ -1237,7 +1242,11 @@ public final class URL implements Serializable {
         return new InetSocketAddress(host, port);
     }
 
+    /**
+     * group/interface:version
+     */
     public String getServiceKey() {
+        // 获取接口全限定类名
         String inf = getServiceInterface();
         if (inf == null) return null;
         StringBuilder buf = new StringBuilder();

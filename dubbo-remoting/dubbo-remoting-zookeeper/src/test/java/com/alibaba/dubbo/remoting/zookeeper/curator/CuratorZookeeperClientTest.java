@@ -29,12 +29,17 @@ import static org.hamcrest.core.Is.is;
 
 @Ignore
 public class CuratorZookeeperClientTest {
+    /**
+     * 为了便于开发人员进行ZooKeeper的开发与测试，Curator提供了一种启动简易ZooKeeper服务的方法——TestingServer。
+     * TestingServer允许开发人员非常方便的启动一个标准的ZooKeeper服务器
+     */
     private TestingServer zkServer;
     private int zkServerPort;
 
     @Before
     public void setUp() throws Exception {
         zkServerPort = NetUtils.getAvailablePort();
+        System.out.println(String.format("zkServerPort:%s", zkServerPort));
         zkServer = new TestingServer(this.zkServerPort, true);
     }
 

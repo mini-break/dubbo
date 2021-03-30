@@ -321,6 +321,7 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Register: " + url);
         }
+        // url加入集合中
         registered.add(url);
     }
 
@@ -486,7 +487,7 @@ public abstract class AbstractRegistry implements Registry {
             String category = entry.getKey();
             List<URL> categoryList = entry.getValue();
             /**
-             * 把分类标实和分类后的列表放入notified的value中
+             * 把分类标识和分类后的列表放入notified的value中
              * 覆盖到 `notified`
              * 当某个分类的数据为空时，会依然有 urls 。其中 `urls[0].protocol = empty` ，通过这样的方式，处理所有服务提供者为空的情况
              */

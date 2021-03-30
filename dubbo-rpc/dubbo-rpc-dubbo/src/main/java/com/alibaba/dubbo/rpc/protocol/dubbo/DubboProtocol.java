@@ -376,7 +376,7 @@ public class DubboProtocol extends AbstractProtocol {
         // 获取 server 参数，默认为 netty
         String str = url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_SERVER);
 
-        // 通过 SPI 检测是否存在 server 参数所代表的 Transporter 拓展，不存在则抛出异常
+        // 通过 SPI 检测是否存在 server 参数所代表的 Transporter 拓展，不存在就抛出 不支持的server type
         if (str != null && str.length() > 0 && !ExtensionLoader.getExtensionLoader(Transporter.class).hasExtension(str))
             throw new RpcException("Unsupported server type: " + str + ", url: " + url);
 

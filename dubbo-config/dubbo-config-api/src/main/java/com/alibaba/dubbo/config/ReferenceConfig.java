@@ -80,6 +80,11 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     // client type
     private String client;
     // url for peer-to-peer invocation
+    /**
+     * 点对点直连通信
+     * <dubbo:reference id="orderService1" interface="com.alibaba.dubbo.demo.DemoService"
+     *       url="dubbo://192.168.19.56:20880/com.alibaba.dubbo.demo.DemoService"/>
+     */
     private String url;
     // method configs
     private List<MethodConfig> methods;
@@ -196,7 +201,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     private void init() {
-        // 避免重复初始化
+        // 如果已经初始化，直接返回
         if (initialized) {
             return;
         }
@@ -207,7 +212,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             throw new IllegalStateException("<dubbo:reference interface=\"\" /> interface not allow null!");
         }
         // get consumer's global configuration
-        // 检测 consumer 变量是否为空，为空则创建
+        // 检测 ReferenceBean consumer 属性是否为空，为空则创建
         checkDefault();
         appendProperties(this);
         if (getGeneric() == null && getConsumer() != null) {
@@ -354,7 +359,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                     }
                 }
                 /**
-                 * 添加 MethodConfig 中的“属性”字段到 attributes
+                 * 添加 MethodConfig 中的“属性"字段到 attributes
                  * 比如 onreturn、onthrow、oninvoke 等
                  */
                 appendAttributes(attributes, method, prefix + "." + method.getName());
@@ -369,6 +374,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         } else if (isInvalidLocalHost(hostToRegistry)) {
             throw new IllegalArgumentException("Specified invalid registry ip from property:" + Constants.DUBBO_IP_TO_REGISTRY + ", value:" + hostToRegistry);
         }
+        // 填充register.ip属性，该属性是消费者连接注册中心的IP，并不是注册中心自身的IP
         map.put(Constants.REGISTER_IP_KEY, hostToRegistry);
 
         //attributes are stored by system context.
@@ -377,8 +383,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         // 创建接口代理对象 主要就是这里，返回接口的代理类，包括负载均衡算法
         ref = createProxy(map);
         /**
-         * 根据服务名，ReferenceConfig，代理类构建 ConsumerModel，
-         * 并将 ConsumerModel 存入到 ApplicationModel 中
+         * 根据服务名，ReferenceConfig，代理类 构建 ConsumerModel，
+         * 并将 ConsumerModel 缓存到 ApplicationModel 中
          */
         ConsumerModel consumerModel = new ConsumerModel(getUniqueServiceName(), this, ref, interfaceClass.getMethods());
         ApplicationModel.initConsumerModel(getUniqueServiceName(), consumerModel);
@@ -428,7 +434,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                             // 设置接口全限定名为 url 路径
                             url = url.setPath(interfaceName);
                         }
-                        // 检测 url 协议是否为 registry，若是，表明用户想使用指定的注册中心
+                        // 检测 url 协议是否为 registry，若是，表明用户想使用指定的注册中心获取服务提供者
                         if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
                             // 将 map 转换为查询字符串，并作为 refer 参数的值添加到 url 中
                             urls.add(url.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
@@ -442,16 +448,18 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                         }
                     }
                 }
-            } else { // assemble URL from register center's configuration
+            } else { // assemble URL from register center's configuration 从注册中心订阅服务
                 // 加载注册中心 url
                 List<URL> us = loadRegistries(false);
                 if (us != null && !us.isEmpty()) {
                     for (URL u : us) {
+                        // 根据注册中心URL，构建监控中心URL
                         URL monitorUrl = loadMonitor(u);
                         if (monitorUrl != null) {
+                            // 如果监控中心不为空，在注册中心URL后增加属性monitor
                             map.put(Constants.MONITOR_KEY, URL.encode(monitorUrl.toFullString()));
                         }
-                        // 添加 refer 参数到 url 中，并将 url 添加到 urls 中
+                        // 添加 refer 参数到注册中心url 中，并将 url 添加到 urls 中
                         urls.add(u.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
                     }
                 }

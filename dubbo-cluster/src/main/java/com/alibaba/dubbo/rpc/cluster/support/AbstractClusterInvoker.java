@@ -134,7 +134,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         // 获得方法名
         String methodName = invocation == null ? "" : invocation.getMethodName();
 
-        // 是否启动了粘滞连接
+        // 是否启动了粘滞连接(尽可能让客户端总是向同一提供者发起调用，除非该提供者挂了，再连另一台。)
         boolean sticky = invokers.get(0).getUrl().getMethodParameter(methodName, Constants.CLUSTER_STICKY_KEY, Constants.DEFAULT_CLUSTER_STICKY);
         {
             //ignore overloaded method
@@ -275,7 +275,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
 
     @Override
     public Result invoke(final Invocation invocation) throws RpcException {
-        // 核对是否已经销毁
+        // 检查是否已经销毁
         checkWhetherDestroyed();
         LoadBalance loadbalance = null;
 
@@ -288,13 +288,16 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         }
 
         // 生成服务提供者集合
+        // 根据invocation中的信息从Directory中获取Invoker列表，这一步中会进行路由的处理
         List<Invoker<T>> invokers = list(invocation);
         if (invokers != null && !invokers.isEmpty()) {
-            // 获得负载均衡器
+            // 使用扩展机制，加载LoadBalance的实现类，默认使用的是random，我们这里得到的就是RandomLoadBalance
             loadbalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(invokers.get(0).getUrl()
                     .getMethodParameter(RpcUtils.getMethodName(invocation), Constants.LOADBALANCE_KEY, Constants.DEFAULT_LOADBALANCE));
         }
+        // 异步操作默认添加invocation id
         RpcUtils.attachInvocationIdIfAsync(getUrl(), invocation);
+        // 调用具体的实现类的doInvoke方法，这里是FailoverClusterInvoker
         return doInvoke(invocation, invokers, loadbalance);
     }
 

@@ -61,6 +61,7 @@ public class Transporters {
             handler = handlers[0];
         } else {
             // 如果 handlers 元素数量大于1，则创建 ChannelHandler 分发器
+            // 多个话就要使用ChannelHandlerDispatcher类来包装，其实里面就是对多个handler循环调用
             handler = new ChannelHandlerDispatcher(handlers);
         }
         /**

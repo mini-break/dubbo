@@ -487,9 +487,9 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             return newUrlInvokerMap;
         }
         Set<String> keys = new HashSet<String>();
-        // 获得引用服务的协议
+        // 获得引用服务的协议，获取消费者URL中的协议类型，<dubbo:reference protocol="" …/>属性值
         String queryProtocols = this.queryMap.get(Constants.PROTOCOL_KEY);
-        // 遍历url
+        // 遍历所有服务提供者url
         for (URL providerUrl : urls) {
             // If protocol is configured at the reference side, only the matching protocol is selected
             // 如果在参考侧配置协议，则仅选择匹配协议
@@ -497,7 +497,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 boolean accept = false;
                 // 分割协议
                 String[] acceptProtocols = queryProtocols.split(",");
-                // 遍历协议
+                /**
+                 * 一个一个处理提供者URL。如果dubbo:referecnce标签的protocol不为空，则需要对服务提供者URL进行过滤，
+                 * 匹配其协议与protocol属性相同的服务，如果不匹配，则跳过后续处理逻辑，接着处理下一个服务提供者URL
+                 */
                 for (String acceptProtocol : acceptProtocols) {
                     // 如果匹配，则是接受的协议
                     if (providerUrl.getProtocol().equals(acceptProtocol)) {
@@ -509,11 +512,11 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                     continue;
                 }
             }
-            // 如果协议是empty，则跳过
+            // 如果协议是empty，则跳过，处理下一个服务提供者URL
             if (Constants.EMPTY_PROTOCOL.equals(providerUrl.getProtocol())) {
                 continue;
             }
-            // 如果该协议不是dubbo支持的，则打印错误日志，跳过
+            // 如果服务提供者协议不是dubbo支持的，则打印错误日志，跳过
             if (!ExtensionLoader.getExtensionLoader(Protocol.class).hasExtension(providerUrl.getProtocol())) {
                 logger.error(new IllegalStateException("Unsupported protocol " + providerUrl.getProtocol() + " in notified url: " + providerUrl + " from registry " + getUrl().getAddress() + " to consumer " + NetUtils.getLocalHost()
                         + ", supported protocol: " + ExtensionLoader.getExtensionLoader(Protocol.class).getSupportedExtensions()));
@@ -570,7 +573,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @return
      */
     private URL mergeUrl(URL providerUrl) {
-        // 合并消费端参数
+        // 合并消费端参数，消费端属性覆盖生产者端属性（配置属性消费者端优先生产者端属性）
         providerUrl = ClusterUtils.mergeUrl(providerUrl, queryMap); // Merge the consumer side parameters
 
         // 合并配置规则

@@ -69,18 +69,24 @@ public class MockClusterInvoker<T> implements Invoker<T> {
     public Result invoke(Invocation invocation) throws RpcException {
         Result result = null;
 
+        /**
+         * 我们没配置mock，所以这里为false，Mock通常用于服务降级
+         */
         String value = directory.getUrl().getMethodParameter(invocation.getMethodName(), Constants.MOCK_KEY, Boolean.FALSE.toString()).trim();
         if (value.length() == 0 || value.equalsIgnoreCase("false")) {
-            //no mock
+            //no mock 没有使用mock
+            // 这里的invoker是FailoverClusterInvoker
             result = this.invoker.invoke(invocation);
         } else if (value.startsWith("force")) {
             if (logger.isWarnEnabled()) {
                 logger.info("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + directory.getUrl());
             }
             //force:direct mock
+            // 表示消费方对方法的调用都直接返回null，不发起远程调用，可用于屏蔽不重要服务不可用的时候，对调用方的影响
             result = doMockInvoke(invocation, null);
         } else {
             //fail-mock
+            // 表示消费方对该服务的方法调用失败后，再返回null，不抛异常，可用于对不重要服务不稳定的时候，忽略对调用方的影响
             try {
                 result = this.invoker.invoke(invocation);
             } catch (RpcException e) {

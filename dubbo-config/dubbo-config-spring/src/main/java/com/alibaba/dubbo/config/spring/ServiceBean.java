@@ -129,8 +129,9 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
     @SuppressWarnings({"unchecked", "deprecation"})
     public void afterPropertiesSet() throws Exception {
         /**
-         * 当某个<dubbo:service/>没有绑定相应的<dubbo:provider/>的时候，就会触发下面的逻辑
-         * 在这里补充一下什么是默认的<dubbo:provider/>，在dubbo配置文件中，可以有多个<dubbo:provider/>配置，如果某个<dubbo:provide/>配置的default属性为true。这个默认配置只能一个
+         * 当某个<dubbo:service/> provider属性没有绑定相应的<dubbo:provider/>的时候，就会触发下面的逻辑
+         * 在这里补充一下什么是默认的<dubbo:provider/>，在dubbo配置文件中，可以有多个<dubbo:provider/>配置，
+         * 如果某个<dubbo:provide/>配置的default属性为true。这个默认配置只能一个
          */
         if (getProvider() == null) {
             // 在spring的IOC容器中查找所有的type为ProviderConfig.class或其子类的bean,可能会有多个provider的配置

@@ -35,7 +35,7 @@ import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
  * <a href="http://en.wikipedia.org/wiki/Computer_cluster">Cluster</a>
  * <a href="http://en.wikipedia.org/wiki/Fault-tolerant_system">Fault-Tolerant</a>
  */
-@SPI(FailoverCluster.NAME)
+@SPI(FailoverCluster.NAME) // 默认是failover 失败重试
 public interface Cluster {
 
     /**
@@ -47,7 +47,7 @@ public interface Cluster {
      * @return cluster invoker
      * @throws RpcException
      */
-    @Adaptive
+    @Adaptive //基于 Dubbo SPI Adaptive 机制，加载对应的 Cluster 实现，使用 URL.cluster 属性
     <T> Invoker<T> join(Directory<T> directory) throws RpcException;
 
 }
